@@ -10,7 +10,6 @@
   <link rel="stylesheet" type="text/css" href="https://melvyniandrag.github.io/theme/font-awesome/css/font-awesome.min.css">
 
 
-    <link href="https://melvyniandrag.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Melvyn's blog Atom">
 
 
 
@@ -86,7 +85,7 @@
   <div>
     <p>This adventure started when I was experimenting with the (wonderful) implementation of Doc2Vec in the <a class="reference external" href="https://github.com/RaRe-Technologies/gensim/">gensim</a> package.</p>
 <p>I was experimenting with Doc2Vec to get a handle on it, and wrote the following code, which kept throwing an error.</p>
-<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gensim</span>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">gensim</span>
 <span class="kn">import</span> <span class="nn">multiprocessing</span>
 
 <span class="n">dirname</span><span class="o">=</span><span class="s2">&quot;/home/temp/nltk_data/corpora/brown&quot;</span>
@@ -108,11 +107,11 @@ elif doc in self.doctags or doc &lt; self.count:
 TypeError: unorderable types: str() &lt; int()
 </pre>
 <p>At this point I knew we were in for the standard procedure of working on code in a linux environment: Find the source code, read it carefully for  a few hours, scratch our heads, swear a bit, and then realize what hair-brained thing is going on before proceeding to fix it. I had been playing iwith doc2vec earlier in the day and had already seen this error and intuited that it meant the the doc_id you are passing to the most_similar function doesn't exist. I didn't know how the TaggedBrownCorpus class worked, but in the <a class="reference external" href="https://github.com/RaRe-Technologies/gensim/blob/develop/gensim/models/doc2vec.py">source</a> it said that it takes a dirname parameter - I correctly guessed that they meant the location of the brown corpus in your nltk download. This was strange to me because in the NLTK package if you</p>
-<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">nltk.corpus</span> <span class="kn">import</span> <span class="n">brown</span>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">nltk.corpus</span> <span class="kn">import</span> <span class="n">brown</span>
 </pre></div>
 <p>and you haven't yet installed the corpus with the nltk.download() command, it spits out an error saying that it can't find the corpus, and then spits out a list of standard search paths that it has checked. But gensim didn't do that so that seemed weird - this is an idea for a simple pull request for someone to work on and send.</p>
 <p>Anyway, I looked at the TaggedBrownCorpus class in the source</p>
-<div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">TaggedBrownCorpus</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">TaggedBrownCorpus</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Iterate over documents from the Brown corpus (part of NLTK data), yielding</span>
 <span class="sd">    each document out as a TaggedDocument object.&quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dirname</span><span class="p">):</span>
@@ -135,13 +134,13 @@ TypeError: unorderable types: str() &lt; int()
                 <span class="k">yield</span> <span class="n">TaggedDocument</span><span class="p">(</span><span class="n">words</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_SENT_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">item_no</span><span class="p">)])</span>
 </pre></div>
 <p>It's hard to see this in the documentation, but the iterator given by the class gives TaggedDocuments that consist of a list of words and a list of labels. In this class, the labels are:</p>
-<div class="highlight"><pre><span></span><span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_SENT_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">item_no</span><span class="p">)]</span>
+<div class="highlight"><pre><span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_SENT_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">item_no</span><span class="p">)]</span>
 </pre></div>
 <p>So I just thought I'd look at the first sentence and see what it was similar to. It seemed that the first sentence would be labelled</p>
-<div class="highlight"><pre><span></span><span class="n">doc_id</span> <span class="o">=</span> <span class="s2">&quot;/home/temp/nltk_data/corpora/brown/ca01_SENT_0&quot;</span>
+<div class="highlight"><pre><span class="n">doc_id</span> <span class="o">=</span> <span class="s2">&quot;/home/temp/nltk_data/corpora/brown/ca01_SENT_0&quot;</span>
 </pre></div>
 <p>Because when I did an ls or ll in &quot;/home/temp/nltk_data/corpora/brown/&quot;, ca01 was the first file listed. And the item_no in the for loop above would start at 0. <em>(If you don't already love it, look into the enumerate() function in python, it is very useful and idiomatic.)</em> Long story short, the first document was ca01_SENT_2. I figured this out with the following code:</p>
-<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gensim</span>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">gensim</span>
 <span class="kn">import</span> <span class="nn">multiprocessing</span>
 
 <span class="n">dirname</span><span class="o">=</span><span class="s2">&quot;/home/temp/nltk_data/corpora/brown&quot;</span>
