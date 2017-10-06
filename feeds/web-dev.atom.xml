@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Melvyn's blog</title><link href="https://melvyniandrag.github.io/" rel="alternate"></link><link href="https://melvyniandrag.github.io/feeds/web-dev.atom.xml" rel="self"></link><id>https://melvyniandrag.github.io/</id><updated>2017-08-13T22:20:00+02:00</updated><entry><title>Maintaining State In Django</title><link href="https://melvyniandrag.github.io/Maintaining-django-application-state.html" rel="alternate"></link><updated>2017-08-13T22:20:00+02:00</updated><author><name>Melvyn Drag</name></author><id>tag:melvyniandrag.github.io,2017-08-13:Maintaining-django-application-state.html</id><summary type="html">&lt;div class="section" id="introduction"&gt;
+&lt;h2&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;The way I've learned to develop a django site is to pass information from page to page through dictionaries that are received from a POST. For example, if you want to pass the value A = 1 from one page to another would be like this:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="solution"&gt;
+&lt;h2&gt;Solution&lt;/h2&gt;
+&lt;/div&gt;
+</summary><category term="django web-dev python"></category></entry></feed>
