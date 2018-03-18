@@ -1,0 +1,153 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link href='//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,400italic' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" type="text/css" href="https://melvyniandrag.github.io/theme/stylesheet/style.min.css">
+
+  <link rel="stylesheet" type="text/css" href="https://melvyniandrag.github.io/theme/pygments/github.min.css">
+  <link rel="stylesheet" type="text/css" href="https://melvyniandrag.github.io/theme/font-awesome/css/font-awesome.min.css">
+
+
+    <link href="https://melvyniandrag.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Melvyn's blog Atom">
+
+
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="" />
+
+
+<meta name="author" content="Melvyn Drag" />
+<meta name="description" content="What's the point of the volatile keyword?" />
+<meta name="keywords" content="embedded c++ c">
+<meta property="og:site_name" content="Melvyn's blog"/>
+<meta property="og:title" content="What the heck is volatile anyway?"/>
+<meta property="og:description" content="What's the point of the volatile keyword?"/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:url" content="https://melvyniandrag.github.io/what is volatile?.html"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2018-03-16 02:40:00+01:00"/>
+<meta property="article:modified_time" content="2018-03-16 00:00:00+01:00"/>
+<meta property="article:author" content="https://melvyniandrag.github.io/author/melvyn-drag.html">
+<meta property="article:section" content="embedded"/>
+<meta property="article:tag" content="embedded c++ c"/>
+<meta property="og:image" content="https://melvyniandrag.github.io/theme/images/profile.png">
+
+  <title>Melvyn's blog &ndash; What the heck is volatile anyway?</title>
+
+</head>
+<body>
+  <aside>
+    <div>
+      <a href="https://melvyniandrag.github.io">
+        <img src="https://melvyniandrag.github.io/theme/images/profile.png" alt="Melvyn Ian Drag" title="Melvyn Ian Drag">
+      </a>
+      <h1><a href="https://melvyniandrag.github.io">Melvyn Ian Drag</a></h1>
+
+<p>Programmer / Amateur Mathematician</p>
+      <nav>
+        <ul class="list">
+
+          <li><a href="http://www.calistostudios.com" target="_blank">TestMakerSite</a></li>
+          <li><a href="http://www.doggymcdogface.info/" target="_blank">DoggyMcDogFace</a></li>
+          <li><a href="http://jinja.pocoo.org/" target="_blank">Resume</a></li>
+        </ul>
+      </nav>
+
+      <ul class="social">
+        <li><a class="sc-github" href="https://github.com/melvyniandrag" target="_blank"><i class="fa fa-github"></i></a></li>
+        <li><a class="sc-linkedin" href="https://www.linkedin.com/in/melvyn-ian-drag-374613107/" target="_blank"><i class="fa fa-linkedin"></i></a></li>
+        <li><a class="sc-twitter" href="https://twitter.com/MelvynDrag" target="_blank"><i class="fa fa-twitter"></i></a></li>
+      </ul>
+    </div>
+
+
+  </aside>
+  <main>
+
+
+<article class="single">
+  <header>
+    <h1 id="what is volatile?">What the heck is volatile anyway?</h1>
+    <p>
+          Posted on Fri 16 March 2018 in <a href="https://melvyniandrag.github.io/category/embedded.html">embedded</a>
+
+
+    </p>
+  </header>
+
+
+  <div>
+    <p>I've been doing some embedded development at work and on hobby rpi and arduino projects. Seems like I ought to figure out what the point of the volatile keyword is at this stage in the game. Here's the reference I found about it: <a class="reference external" href="https://www.embedded.com/electronics-blogs/beginner-s-corner/4023801/Introduction-to-the-Volatile-Keyword/">volatileReference</a> volatile reference.</p>
+<p>I'm unable after a half hour of experimenting to make heads or tails of it. It seems like the compiler will optimize away bits of code that deal with a variable that ought not to change. I think this is a main concern in multithreaded programming. Now I wonder if the keyword is still relevant or if the compilers these days are all aware of multithreaded programming and volatile is unneccesary.</p>
+<div class="highlight"><pre>static int x;
+// static volatile int x;
+
+void * f1( void* args )
+{
+        x = 0;
+        while( x == 0 )
+        {
+                sleep(1);
+        }
+        return NULL;
+}
+
+void * f2( void * args )
+{
+        x = 10;
+        return NULL;
+}
+int main(){
+        x = 0;
+        pthread_t t1;
+        pthread_create( &amp;t1, NULL, f1, NULL );
+        int rc1;
+        rc1 = pthread_detach( t1 );
+
+        pthread_t t2;
+        pthread_create( &amp;t2, NULL, f2, NULL );
+        int rc2;
+        rc2 = pthread_detach( t2 );
+}
+</pre></div>
+<p>I've compiled this without the volatile keyword with -O3 and without and either way it doesn't loop infinitely. I guess my understanding from the code snippet on embedded.com was that the compiler ought to be dumb and think that x would be 0 forever and optimize the x==0 away, making the loop run forever. That didn't happen, I haven't come across &quot;volatile&quot; in the professional work I've done, and it's not in the texts I've read. I'm busy and I'm just going to have to assume &quot;volatile&quot; isn't worth using. I'll talk to coworkers and read a bit more later but for now that's the conclusion I'm drawing and I'm going to sleep.</p>
+
+  </div>
+  <div class="tag-cloud">
+    <p>
+      <a href="https://melvyniandrag.github.io/tag/embedded-c-c.html">embedded c++ c</a>
+    </p>
+  </div>
+
+
+
+
+</article>
+
+    <footer>
+<p>&copy; melvyn </p>
+<p>    Powered by <a href="http://getpelican.com" target="_blank">Pelican</a> - <a href="https://github.com/alexandrevicenzi/flex" target="_blank">Flex</a> theme by <a href="http://alexandrevicenzi.com" target="_blank">Alexandre Vicenzi</a>
+</p>    </footer>
+  </main>
+
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context" : "http://schema.org",
+  "@type" : "Blog",
+  "name": " Melvyn's blog ",
+  "url" : "https://melvyniandrag.github.io",
+  "image": "https://melvyniandrag.github.io/theme/images/profile.png",
+  "description": "Melvyn's Thoughts and Writings"
+}
+</script>
+</body>
+</html>
