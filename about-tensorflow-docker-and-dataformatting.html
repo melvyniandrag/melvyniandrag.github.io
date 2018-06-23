@@ -1,0 +1,142 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link href='//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,400italic' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" type="text/css" href="https://melvyniandrag.github.io/theme/stylesheet/style.min.css">
+
+  <link rel="stylesheet" type="text/css" href="https://melvyniandrag.github.io/theme/pygments/github.min.css">
+  <link rel="stylesheet" type="text/css" href="https://melvyniandrag.github.io/theme/font-awesome/css/font-awesome.min.css">
+
+
+    <link href="https://melvyniandrag.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Melvyn's blog Atom">
+
+
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="" />
+
+
+<meta name="author" content="Melvyn Drag" />
+<meta name="description" content="A Small Post About Tensorflow" />
+<meta name="keywords" content="tensorflow, docker, machine learning">
+<meta property="og:site_name" content="Melvyn's blog"/>
+<meta property="og:title" content="A couple of notes about TensorFlow, Docker, and Data Formatting"/>
+<meta property="og:description" content="A Small Post About Tensorflow"/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:url" content="https://melvyniandrag.github.io/about-tensorflow-docker-and-dataformatting.html"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2018-06-22 01:59:00+02:00"/>
+<meta property="article:modified_time" content="2018-06-22 01:59:00+02:00"/>
+<meta property="article:author" content="https://melvyniandrag.github.io/author/melvyn-drag.html">
+<meta property="article:section" content="linux"/>
+<meta property="article:tag" content="tensorflow"/>
+<meta property="article:tag" content="docker"/>
+<meta property="article:tag" content="machine learning"/>
+<meta property="og:image" content="https://melvyniandrag.github.io/theme/img/profile.png">
+
+  <title>Melvyn's blog &ndash; A couple of notes about TensorFlow, Docker, and Data Formatting</title>
+
+</head>
+<body>
+  <aside>
+    <div>
+      <a href="https://melvyniandrag.github.io">
+        <img src="https://melvyniandrag.github.io/theme/img/profile.png" alt="Melvyn Ian Drag" title="Melvyn Ian Drag">
+      </a>
+      <h1><a href="https://melvyniandrag.github.io">Melvyn Ian Drag</a></h1>
+
+<p>Programmer / Amateur Mathematician</p>
+      <nav>
+        <ul class="list">
+
+          <li><a href="http://www.calistostudios.com" target="_blank">TestMakerSite</a></li>
+          <li><a href="http://www.doggymcdogface.info/" target="_blank">DoggyMcDogFace</a></li>
+          <li><a href="http://jinja.pocoo.org/" target="_blank">Resume</a></li>
+        </ul>
+      </nav>
+
+      <ul class="social">
+        <li><a class="sc-github" href="https://github.com/melvyniandrag" target="_blank"><i class="fa fa-github"></i></a></li>
+        <li><a class="sc-linkedin" href="https://www.linkedin.com/in/melvyn-ian-drag-374613107/" target="_blank"><i class="fa fa-linkedin"></i></a></li>
+        <li><a class="sc-twitter" href="https://twitter.com/MelvynDrag" target="_blank"><i class="fa fa-twitter"></i></a></li>
+      </ul>
+    </div>
+
+
+  </aside>
+  <main>
+
+
+<article class="single">
+  <header>
+    <h1 id="about-tensorflow-docker-and-dataformatting">A couple of notes about TensorFlow, Docker, and Data Formatting</h1>
+    <p>
+          Posted on Fri 22 June 2018 in <a href="https://melvyniandrag.github.io/category/linux.html">linux</a>
+
+
+    </p>
+  </header>
+
+
+  <div>
+    <p>I've just seriously started working with Docker and Tensorflow after a long hiatus from machine learning, during which time I've learned alot about Linux, C++, embedded systems and more.</p>
+<p>Now that I'm returning to the machine learning / gpgpu / higher level programming world I want to make a few quick notes for my own memory's sake and to propose an experiment that I'll try to carry out tonight or in the next few days.</p>
+<p>To start, though, here is a basic Dockerfile I'm using to setup my cpu tensorflow environment.</p>
+<div class="highlight"><pre>WORKDIR /app
+
+ADD . /app
+
+RUN apt-get update
+RUN pip install --trusted-host pypi.python.org -r requirements.txt
+RUN apt-get --assume-yes install python3-pip python3-dev
+RUN pip3 install --upgrade tensorflow
+
+EXPOSE 80
+
+ENV NAME World
+</pre></div>
+<p>This file gets you up and running with docker and tensorflow.</p>
+<p>If you check out the mnist dataset that is built into tensorflow at &quot;mnist = tf.contrib.learn.datasets.load_dataset(&quot;mnist&quot;)&quot;, if you &quot;print(mnist.train.images.shape)&quot; you'll see the shape is (55000,  784). Seems weird that a 2d array stores a bunch of images. Turns out from <a class="reference external" href="http://yann.lecun.com/exdb/mnist/index.html">http://yann.lecun.com/exdb/mnist/index.html</a> that they have 55k train images that are 20x20 but padded to 28x28 and 28*28 = 784 so that means that the images were flattened along an axis. An interesting question arises - do alternative flattenings change the results output by the CNN?</p>
+<p>Option 1 is to flatten along the other axis. A more interesting option is to create a mapping for pixel indices, like pixel[1][100] -&gt; output[355] or something and do that for all pixels in the image and use the same mapping across the whole dataset. Going to experiment with that later tonight or tomorrow as now I'm just working on tinkering with setting up my environment in diff. ways and exploring docker.</p>
+
+  </div>
+  <div class="tag-cloud">
+    <p>
+      <a href="https://melvyniandrag.github.io/tag/tensorflow.html">tensorflow</a>
+      <a href="https://melvyniandrag.github.io/tag/docker.html">docker</a>
+      <a href="https://melvyniandrag.github.io/tag/machine-learning.html">machine learning</a>
+    </p>
+  </div>
+
+
+
+
+</article>
+
+    <footer>
+<p>&copy; melvyn </p>
+<p>    Powered by <a href="http://getpelican.com" target="_blank">Pelican</a> - <a href="https://github.com/alexandrevicenzi/flex" target="_blank">Flex</a> theme by <a href="http://alexandrevicenzi.com" target="_blank">Alexandre Vicenzi</a>
+</p>    </footer>
+  </main>
+
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context" : "http://schema.org",
+  "@type" : "Blog",
+  "name": " Melvyn's blog ",
+  "url" : "https://melvyniandrag.github.io",
+  "image": "https://melvyniandrag.github.io/theme/img/profile.png",
+  "description": "Melvyn's Thoughts and Writings"
+}
+</script>
+</body>
+</html>
