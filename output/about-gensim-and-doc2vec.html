@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link href='//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,400italic' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" type="text/css" href="https://melvyniandrag.github.io/theme/stylesheet/style.min.css">
+
+  <link rel="stylesheet" type="text/css" href="https://melvyniandrag.github.io/theme/pygments/github.min.css">
+  <link rel="stylesheet" type="text/css" href="https://melvyniandrag.github.io/theme/font-awesome/css/font-awesome.min.css">
+
+
+    <link href="https://melvyniandrag.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Melvyn's blog Atom">
+
+
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="" />
+
+
+<meta name="author" content="Melvyn Drag" />
+<meta name="description" content="A Small Post About Open Source Software" />
+<meta name="keywords" content="gensim, word2vec, machine learning">
+<meta property="og:site_name" content="Melvyn's blog"/>
+<meta property="og:title" content="Troubleshooting the gensim implementation of Doc2Vec"/>
+<meta property="og:description" content="A Small Post About Open Source Software"/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:url" content="https://melvyniandrag.github.io/about-gensim-and-doc2vec.html"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2017-01-25 02:40:00+01:00"/>
+<meta property="article:modified_time" content="2017-01-25 02:40:00+01:00"/>
+<meta property="article:author" content="https://melvyniandrag.github.io/author/melvyn-drag.html">
+<meta property="article:section" content="natural language processing"/>
+<meta property="article:tag" content="gensim"/>
+<meta property="article:tag" content="word2vec"/>
+<meta property="article:tag" content="machine learning"/>
+<meta property="og:image" content="https://melvyniandrag.github.io/theme/img/profile.png">
+
+  <title>Melvyn's blog &ndash; Troubleshooting the gensim implementation of Doc2Vec</title>
+
+</head>
+<body>
+  <aside>
+    <div>
+      <a href="https://melvyniandrag.github.io">
+        <img src="https://melvyniandrag.github.io/theme/img/profile.png" alt="Melvyn Ian Drag" title="Melvyn Ian Drag">
+      </a>
+      <h1><a href="https://melvyniandrag.github.io">Melvyn Ian Drag</a></h1>
+
+<p>C++ / Python / Embedded Linux</p>
+      <nav>
+        <ul class="list">
+
+          <li><a href="https://www.mathtestmaker.com" target="_blank">TestMakerSite</a></li>
+          <li><a href="http://ballofknives.com/" target="_blank">Ball Of Knives</a></li>
+          <li><a href="http://jinja.pocoo.org/" target="_blank">Resume</a></li>
+        </ul>
+      </nav>
+
+      <ul class="social">
+        <li><a class="sc-github" href="https://github.com/melvyniandrag" target="_blank"><i class="fa fa-github"></i></a></li>
+        <li><a class="sc-linkedin" href="https://www.linkedin.com/in/melvyn-ian-drag-374613107/" target="_blank"><i class="fa fa-linkedin"></i></a></li>
+        <li><a class="sc-twitter" href="https://twitter.com/MelvynDrag" target="_blank"><i class="fa fa-twitter"></i></a></li>
+      </ul>
+    </div>
+
+
+  </aside>
+  <main>
+
+
+<article class="single">
+  <header>
+    <h1 id="about-gensim-and-doc2vec">Troubleshooting the gensim implementation of Doc2Vec</h1>
+    <p>
+          Posted on Wed 25 January 2017 in <a href="https://melvyniandrag.github.io/category/natural-language-processing.html">natural language processing</a>
+
+
+    </p>
+  </header>
+
+
+  <div>
+    <p>This adventure started when I was experimenting with the (wonderful) implementation of Doc2Vec in the <a class="reference external" href="https://github.com/RaRe-Technologies/gensim/">gensim</a> package.</p>
+<p>I was experimenting with Doc2Vec to get a handle on it, and wrote the following code, which kept throwing an error.</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">gensim</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
+
+<span class="n">dirname</span><span class="o">=</span><span class="s2">&quot;/home/temp/nltk_data/corpora/brown&quot;</span>
+<span class="n">documents</span> <span class="o">=</span> <span class="n">gensim</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">doc2vec</span><span class="o">.</span><span class="n">TaggedBrownCorpus</span><span class="p">(</span><span class="n">dirname</span><span class="p">)</span>
+<span class="n">cores</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">gensim</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">Doc2Vec</span><span class="p">(</span><span class="n">dm</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dbow_words</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">min_count</span><span class="o">=</span><span class="mi">19</span><span class="p">,</span> <span class="nb">iter</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">workers</span><span class="o">=</span><span class="n">cores</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">build_vocab</span><span class="p">(</span><span class="n">documents</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">documents</span><span class="p">)</span>
+
+<span class="c1"># I&#39;ll explain the doc_of_interest in a minute.</span>
+<span class="n">doc_of_interest</span> <span class="o">=</span> <span class="s2">&quot;/home/temp/nltk_data/corpora/brown/ca01_SENT_0&quot;</span>
+<span class="n">like_doc_of_interest</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">docvecs</span><span class="o">.</span><span class="n">most_similar</span><span class="p">(</span><span class="n">positive</span><span class="o">=</span><span class="p">[</span><span class="n">doc_id</span><span class="p">],</span> <span class="n">topn</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">like_doc_of_interest</span><span class="p">)</span>
+</pre></div>
+<p>And this code was throwing the following error.</p>
+<pre class="literal-block">
+/home/temp/anaconda3/lib/python3.5/site-packages/gensim/models/doc2vec.py&quot;, line 448, in most_similar
+elif doc in self.doctags or doc &lt; self.count:
+TypeError: unorderable types: str() &lt; int()
+</pre>
+<p>At this point I knew we were in for the standard procedure of working on code in a linux environment: Find the source code, read it carefully for  a few hours, scratch our heads, swear a bit, and then realize what hair-brained thing is going on before proceeding to fix it. I had been playing iwith doc2vec earlier in the day and had already seen this error and intuited that it meant the the doc_id you are passing to the most_similar function doesn't exist. I didn't know how the TaggedBrownCorpus class worked, but in the <a class="reference external" href="https://github.com/RaRe-Technologies/gensim/blob/develop/gensim/models/doc2vec.py">source</a> it said that it takes a dirname parameter - I correctly guessed that they meant the location of the brown corpus in your nltk download. This was strange to me because in the NLTK package if you</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">nltk.corpus</span> <span class="kn">import</span> <span class="n">brown</span>
+</pre></div>
+<p>and you haven't yet installed the corpus with the nltk.download() command, it spits out an error saying that it can't find the corpus, and then spits out a list of standard search paths that it has checked. But gensim didn't do that so that seemed weird - this is an idea for a simple pull request for someone to work on and send.</p>
+<p>Anyway, I looked at the TaggedBrownCorpus class in the source</p>
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">TaggedBrownCorpus</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Iterate over documents from the Brown corpus (part of NLTK data), yielding</span>
+<span class="sd">    each document out as a TaggedDocument object.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dirname</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dirname</span> <span class="o">=</span> <span class="n">dirname</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dirname</span><span class="p">):</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dirname</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">for</span> <span class="n">item_no</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">smart_open</span><span class="p">(</span><span class="n">fname</span><span class="p">)):</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_unicode</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                <span class="c1"># each file line is a single document in the Brown corpus</span>
+                <span class="c1"># each token is WORD/POS_TAG</span>
+                <span class="n">token_tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">))</span> <span class="o">==</span> <span class="mi">2</span><span class="p">]</span>
+                <span class="c1"># ignore words with non-alphabetic tags like &quot;,&quot;, &quot;!&quot; etc (punctuation, weird stuff)</span>
+                <span class="n">words</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">token</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">tag</span><span class="p">[:</span><span class="mi">2</span><span class="p">])</span> <span class="k">for</span> <span class="n">token</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">token_tags</span> <span class="k">if</span> <span class="n">tag</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">isalpha</span><span class="p">()]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">words</span><span class="p">:</span>  <span class="c1"># don&#39;t bother sending out empty documents</span>
+                    <span class="k">continue</span>
+                <span class="k">yield</span> <span class="n">TaggedDocument</span><span class="p">(</span><span class="n">words</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_SENT_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">item_no</span><span class="p">)])</span>
+</pre></div>
+<p>It's hard to see this in the documentation, but the iterator given by the class gives TaggedDocuments that consist of a list of words and a list of labels. In this class, the labels are:</p>
+<div class="highlight"><pre><span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_SENT_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">item_no</span><span class="p">)]</span>
+</pre></div>
+<p>So I just thought I'd look at the first sentence and see what it was similar to. It seemed that the first sentence would be labelled</p>
+<div class="highlight"><pre><span class="n">doc_id</span> <span class="o">=</span> <span class="s2">&quot;/home/temp/nltk_data/corpora/brown/ca01_SENT_0&quot;</span>
+</pre></div>
+<p>Because when I did an ls or ll in &quot;/home/temp/nltk_data/corpora/brown/&quot;, ca01 was the first file listed. And the item_no in the for loop above would start at 0. <em>(If you don't already love it, look into the enumerate() function in python, it is very useful and idiomatic.)</em> Long story short, the first document was ca01_SENT_2. I figured this out with the following code:</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">gensim</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
+
+<span class="n">dirname</span><span class="o">=</span><span class="s2">&quot;/home/temp/nltk_data/corpora/brown&quot;</span>
+
+<span class="n">documents</span> <span class="o">=</span> <span class="n">gensim</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">doc2vec</span><span class="o">.</span><span class="n">TaggedBrownCorpus</span><span class="p">(</span><span class="n">dirname</span><span class="p">)</span>
+
+<span class="n">all_docs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">documents</span><span class="p">)</span>
+<span class="n">all_tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">tagged_document</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">tagged_document</span> <span class="ow">in</span> <span class="n">all_docs</span><span class="p">]</span>
+<span class="n">all_tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">at</span> <span class="k">for</span> <span class="n">at</span> <span class="ow">in</span> <span class="n">all_tags</span> <span class="k">if</span> <span class="s1">&#39;CONTENT&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">at</span><span class="p">]</span>
+<span class="n">all_tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">at</span> <span class="k">for</span> <span class="n">at</span> <span class="ow">in</span> <span class="n">all_tags</span> <span class="k">if</span> <span class="s1">&#39;ca01&#39;</span> <span class="ow">in</span> <span class="n">at</span><span class="p">]</span>
+<span class="n">all_tags</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="n">all_tags</span><span class="p">)</span>
+</pre></div>
+<p>Then, I was really perplexed, so I went to look at the ca01 file. As it turns out, the lines in these files are separated by two blank lines. So, the first non-empty line is not line0, not line 1, but line 2. Then line 5, 8, and so on, skipping two lines in between.</p>
+<p>The moral of the story: The age-old adage: &quot;Garbage in, garbage out&quot;. In our profession you have to be vary careful about particulars. As a simple project, someone needs to improve the error handling in Doc2Vec, because the error I showed above was in no way helpful. After I sorted out this issue I went on to do lots of interesting experiments, and we should be grateful to the developers who made this software freely available for both academic and commercial use.</p>
+
+  </div>
+  <div class="tag-cloud">
+    <p>
+      <a href="https://melvyniandrag.github.io/tag/gensim.html">gensim</a>
+      <a href="https://melvyniandrag.github.io/tag/word2vec.html">word2vec</a>
+      <a href="https://melvyniandrag.github.io/tag/machine-learning.html">machine learning</a>
+    </p>
+  </div>
+
+
+
+
+</article>
+
+    <footer>
+<p>&copy; melvyn </p>
+<p>    Powered by <a href="http://getpelican.com" target="_blank">Pelican</a> - <a href="https://github.com/alexandrevicenzi/flex" target="_blank">Flex</a> theme by <a href="http://alexandrevicenzi.com" target="_blank">Alexandre Vicenzi</a>
+</p>    </footer>
+  </main>
+
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context" : "http://schema.org",
+  "@type" : "Blog",
+  "name": " Melvyn's blog ",
+  "url" : "https://melvyniandrag.github.io",
+  "image": "https://melvyniandrag.github.io/theme/img/profile.png",
+  "description": "Melvyn's Thoughts and Writings"
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Melvyn's blog</title><link href="https://melvyniandrag.github.io/" rel="alternate"></link><link href="https://melvyniandrag.github.io/feeds/linux.atom.xml" rel="self"></link><id>https://melvyniandrag.github.io/</id><updated>2018-06-22T01:59:00+02:00</updated><entry><title>A couple of notes about TensorFlow, Docker, and Data Formatting</title><link href="https://melvyniandrag.github.io/about-tensorflow-docker-and-dataformatting.html" rel="alternate"></link><updated>2018-06-22T01:59:00+02:00</updated><author><name>Melvyn Drag</name></author><id>tag:melvyniandrag.github.io,2018-06-22:about-tensorflow-docker-and-dataformatting.html</id><summary type="html">&lt;p&gt;I've just seriously started working with Docker and Tensorflow after a long hiatus from machine learning, during which time I've learned alot about Linux, C++, embedded systems and more.&lt;/p&gt;
+&lt;p&gt;Now that I'm returning to the machine learning / gpgpu / higher level programming world I want to make a few quick notes for my own memory's sake and to propose an experiment that I'll try to carry out tonight or in the next few days.&lt;/p&gt;
+&lt;p&gt;To start, though, here is a basic Dockerfile I'm using to setup my cpu tensorflow environment.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;WORKDIR /app
+
+ADD . /app
+
+RUN apt-get update
+RUN pip install --trusted-host pypi.python.org -r requirements.txt
+RUN apt-get --assume-yes install python3-pip python3-dev
+RUN pip3 install --upgrade tensorflow
+
+EXPOSE 80
+
+ENV NAME World
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This file gets you up and running with docker and tensorflow.&lt;/p&gt;
+&lt;p&gt;If you check out the mnist dataset that is built into tensorflow at &amp;quot;mnist = tf.contrib.learn.datasets.load_dataset(&amp;quot;mnist&amp;quot;)&amp;quot;, if you &amp;quot;print(mnist.train.images.shape)&amp;quot; you'll see the shape is (55000,  784). Seems weird that a 2d array stores a bunch of images. Turns out from &lt;a class="reference external" href="http://yann.lecun.com/exdb/mnist/index.html"&gt;http://yann.lecun.com/exdb/mnist/index.html&lt;/a&gt; that they have 55k train images that are 20x20 but padded to 28x28 and 28*28 = 784 so that means that the images were flattened along an axis. An interesting question arises - do alternative flattenings change the results output by the CNN?&lt;/p&gt;
+&lt;p&gt;Option 1 is to flatten along the other axis. A more interesting option is to create a mapping for pixel indices, like pixel[1][100] -&amp;gt; output[355] or something and do that for all pixels in the image and use the same mapping across the whole dataset. Going to experiment with that later tonight or tomorrow as now I'm just working on tinkering with setting up my environment in diff. ways and exploring docker.&lt;/p&gt;
+</summary><category term="tensorflow"></category><category term="docker"></category><category term="machine learning"></category></entry></feed>

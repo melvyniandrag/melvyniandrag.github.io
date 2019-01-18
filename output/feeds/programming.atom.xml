@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Melvyn's blog</title><link href="https://melvyniandrag.github.io/" rel="alternate"></link><link href="https://melvyniandrag.github.io/feeds/programming.atom.xml" rel="self"></link><id>https://melvyniandrag.github.io/</id><updated>2018-03-15T22:20:00+01:00</updated><entry><title>FP vs OOP</title><link href="https://melvyniandrag.github.io/FP%20vs%20OOP.html" rel="alternate"></link><updated>2018-03-15T22:20:00+01:00</updated><author><name>Melvyn Drag</name></author><id>tag:melvyniandrag.github.io,2018-03-15:FP vs OOP.html</id><summary type="html">&lt;div class="section" id="id1"&gt;
+&lt;h2&gt;FP vs OOP&lt;/h2&gt;
+&lt;p&gt;I've been working on a large C++/Java project at work and have found that OOP is not without it's pitfalls.&lt;/p&gt;
+&lt;p&gt;I've been writing classes for everything and loving them for years for academic and personal projects, but did more functional/procedural coding when I was working in datascience. For me, functional programming is all about functions taking values as parameters and returning values without mutating state. Global variables being mutated inside functions would be again the FP philosophy and it does add complexity to a program because it is difficult to know the value of the variable at any point in time.&lt;/p&gt;
+&lt;p&gt;I've always had a little bit of fear of global variables, but I understand from and optimization / resource constrained perspective they can be useful. But OOP seems to create lots of little environments with their own nefarious global variables. m_memberVariable is global within a class and when there are many member functions mutating the member variables it can become extremely unwieldy to maintain in certain large, complex classes.&lt;/p&gt;
+&lt;p&gt;Programming is complex, there's no way around it.&lt;/p&gt;
+&lt;p&gt;Interested one day to do more serious scala projects than the little hobby things I've done to think more about the fusion of the two styles.&lt;/p&gt;
+&lt;/div&gt;
+</summary><category term="c++ functional FP"></category></entry></feed>

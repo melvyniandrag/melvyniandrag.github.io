@@ -1,0 +1,533 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Melvyn's blog</title><link href="https://melvyniandrag.github.io/" rel="alternate"></link><link href="https://melvyniandrag.github.io/feeds/all.atom.xml" rel="self"></link><id>https://melvyniandrag.github.io/</id><updated>2018-11-19T02:40:00+01:00</updated><entry><title>Inductive RGB Spark Plug Sensor.</title><link href="https://melvyniandrag.github.io/Inductive%20RGB%20tachometer.html" rel="alternate"></link><updated>2018-11-19T02:40:00+01:00</updated><author><name>Melvyn Drag</name></author><id>tag:melvyniandrag.github.io,2018-11-19:Inductive RGB tachometer.html</id><summary type="html">&lt;div class="section" id="introduction"&gt;
+&lt;h2&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;This project is inspired by this one:. &lt;a class="reference external" href="https://kokoraskostas.blogspot.com/2013/12/arduino-inductive-spark-plug-sensor.html/"&gt;Inductive Spark Plug Sensor&lt;/a&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="shopping-list"&gt;
+&lt;h2&gt;Shopping List&lt;/h2&gt;
+&lt;p&gt;Inductive Sensor
+1. XSolid Hookup wire
+2. X(2) 1N4007
+3. X(2) 10K Ohm Resistors
+4. X(1) 100nF Cap
+5. X(1) 5.1V zener diode
+6. X(1) 1N4148
+7. X(1) 2N3904
+8. X(1) 4.7K Ohm Resistor&lt;/p&gt;
+&lt;p&gt;Power Supply
+1. X(1) 1N4007
+2. X(2) 220uF Caps
+3. X(2) 100nF Caps
+4. X(1) LM7805
+5. Some means of providing 12V.&lt;/p&gt;
+&lt;p&gt;Pulse Counter
+1. X(1) SN74LS14N
+2. X(2) 1nF Caps&lt;/p&gt;
+&lt;p&gt;Keep an eye out on my instructable page for this project. Going to connect the sensor to some RGB LEDs and interpret the the rpm as a color.&lt;/p&gt;
+&lt;/div&gt;
+</summary><category term="Arduino"></category></entry><entry><title>Move Semantics and Other C++11 Stuff</title><link href="https://melvyniandrag.github.io/Move%20Semantics%20and%20Other%20C++11%20Stuff.html" rel="alternate"></link><updated>2018-11-19T02:40:00+01:00</updated><author><name>Melvyn Drag</name></author><id>tag:melvyniandrag.github.io,2018-11-19:Move Semantics and Other C++11 Stuff.html</id><summary type="html">&lt;div class="section" id="introduction"&gt;
+&lt;h2&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;Just a quick refresher on move semantics and c++11 to keep it in mind, since the opportunities to use this stuff isn't always there, and if ya don't use it ya lose it. move semantics let you pass by value super fast. Useful when passing by value and passing by reference are both needed. Use the copy constructor for creating new objects, use move for passing by value.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="move-semantics"&gt;
+&lt;h2&gt;Move Semantics&lt;/h2&gt;
+&lt;p&gt;R value references are mainly used for 2 things:
+1. Moving things, which allows for a cool efficient type of constructor
+2. Perfect forwarding, which allows for efficient passing of arguements through nested function calls.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="r-value-references"&gt;
+&lt;h2&gt;R Value References&lt;/h2&gt;
+&lt;p&gt;I've seen lvalues and rvalues referred to as left/right values as well as locator/register values.&lt;/p&gt;
+&lt;p&gt;An lvalue is a value that has an address in memory.&lt;/p&gt;
+&lt;p&gt;An rvalue is a temporary value that only live for a bit in a register and is discarded after being processed.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;printInt&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt; &lt;span class="c1"&gt;// 1&lt;/span&gt;
+&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;printInt&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt; &lt;span class="c1"&gt;// 2&lt;/span&gt;
+
+&lt;span class="p"&gt;...&lt;/span&gt;
+
+&lt;span class="n"&gt;printInt&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt; &lt;span class="c1"&gt;//This calls version 2&lt;/span&gt;
+&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;printInt&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt; &lt;span class="c1"&gt;// calls version 1&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;We cannot pass an integer rvalue to version 2, and without the existence of version 2 we would get a compilation error. We can pass rvalues as const references, however. So, this code is good:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;printInt&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt;
+
+&lt;span class="p"&gt;...&lt;/span&gt;
+
+&lt;span class="n"&gt;printInt&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;I think that's weird, I read somewhere that Bjarne thought about including references to rvalues, but that it was ultimately deemed to complicated to reason about from a programmer perspective. The const reference to an rvalue is still kind of weird to me, and I don't know why they allow it. the logic is that the referenced value won't change so it's okay. Don't know how the compiler deals with it and one day it would be interesting to play around with godbolt to see what happens.&lt;/p&gt;
+&lt;p&gt;In the Bo Qian youtube tutorial, he shows how rvalue ref overloading functions can create ambiguities for the compiler:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;printInt&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;printInt&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt;
+
+&lt;span class="p"&gt;...&lt;/span&gt;
+
+&lt;span class="n"&gt;printInt&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt; &lt;span class="c1"&gt;// compiler error&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This is similar to the ambiguity that you see in C++98&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;printInt&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;printInt&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt;
+
+&lt;span class="p"&gt;...&lt;/span&gt;
+
+&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;printInt&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;A main use case of this (?)cryptic new syntax is creating move constructors, that allow you to move the contents of a container to a new memory location, leaving the old location in a useless, but destructable state. It performs a sort of shallow copy, transferring ownership of internal pointers and simple datatypes so that the values pointed to don't need to be recreated on copy.&lt;/p&gt;
+&lt;p&gt;For example:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;hugeArray&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="k"&gt;public&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+    &lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;array&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="kt"&gt;size_t&lt;/span&gt; &lt;span class="n"&gt;size&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+    &lt;span class="n"&gt;hugeArray&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="p"&gt;...&lt;/span&gt;&lt;span class="n"&gt;some&lt;/span&gt; &lt;span class="n"&gt;parameters&lt;/span&gt;&lt;span class="p"&gt;...&lt;/span&gt; &lt;span class="p"&gt;){&lt;/span&gt;
+        &lt;span class="p"&gt;...&lt;/span&gt; &lt;span class="n"&gt;construct&lt;/span&gt; &lt;span class="p"&gt;...&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+
+    &lt;span class="n"&gt;hugeArray&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="n"&gt;hugeArray&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt; &lt;span class="n"&gt;rhs&lt;/span&gt; &lt;span class="p"&gt;){&lt;/span&gt;
+        &lt;span class="c1"&gt;// the copy constructor has to copy the contents of rhs.array to array!&lt;/span&gt;
+        &lt;span class="n"&gt;size&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;rhs&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;size&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+        &lt;span class="n"&gt;array&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="kt"&gt;double&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;size&lt;/span&gt;&lt;span class="p"&gt;];&lt;/span&gt;
+        &lt;span class="n"&gt;memcpy&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;array&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;rhs&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;array&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;size&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+
+    &lt;span class="n"&gt;hugeArray&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;hugeArray&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="n"&gt;rhs&lt;/span&gt; &lt;span class="p"&gt;){&lt;/span&gt;
+        &lt;span class="c1"&gt;// move constructor just steals the ptr to the rhs.array!&lt;/span&gt;
+        &lt;span class="c1"&gt;// note that the rhs.array is junked, set to nullptr, the rhs is junk now.&lt;/span&gt;
+        &lt;span class="n"&gt;size&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;rhs&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;size&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+        &lt;span class="n"&gt;array&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;rhs&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;array&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+        &lt;span class="n"&gt;rhs&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;array&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;nullptr&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+        &lt;span class="n"&gt;rhs&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;size&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+
+    &lt;span class="o"&gt;~&lt;/span&gt;&lt;span class="n"&gt;hugeArray&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="k"&gt;delete&lt;/span&gt;&lt;span class="p"&gt;[]&lt;/span&gt; &lt;span class="n"&gt;array&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="p"&gt;};&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Why couldn't we just take the hugeArray by reference, trash its internal members and steal pointers? The copy constructor can take a non const parameter. I guess this new syntax gives us a way to differentiate between the two cases. Anyway, here is usage of the above class:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;hugeArray&lt;/span&gt; &lt;span class="n"&gt;ha&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;bar&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;hugeArray&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt; &lt;span class="n"&gt;ha&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt;
+
+&lt;span class="p"&gt;...&lt;/span&gt;
+
+&lt;span class="n"&gt;hugeArray&lt;/span&gt; &lt;span class="n"&gt;ha&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;ha&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="p"&gt;...&lt;/span&gt;&lt;span class="n"&gt;stuff&lt;/span&gt;&lt;span class="p"&gt;...&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;ha&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt; &lt;span class="c1"&gt;// calls copy constructor&lt;/span&gt;
+&lt;span class="n"&gt;bar&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;ha&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt; &lt;span class="c1"&gt;// no constructor call, by reference.&lt;/span&gt;
+&lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;move&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;ha&lt;/span&gt; &lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt; &lt;span class="c1"&gt;// but be sure not to use ha anymore. This calls the move constructor.&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;std::move() turns an lvalue into an rvalue. Notive that the last call to foo() above turns ha into junk, due to the move contructor call. This is dangerous and error prone. This move constructor stuff is usually hidden behind some RAII stuff ( I think ), so we don't have to worry about this error prone situation.&lt;/p&gt;
+&lt;p&gt;You can also create move assignment operators ( in addition to the move constructor shown above. So the old &amp;quot;rule of 3&amp;quot; for classes is now &amp;quot;rule of 3, or 5&amp;quot;&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;destructor&lt;/li&gt;
+&lt;li&gt;copy constructor&lt;/li&gt;
+&lt;li&gt;assignment operator&lt;/li&gt;
+&lt;li&gt;[new] move constructor&lt;/li&gt;
+&lt;li&gt;[new] move assignment operator&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c1"&gt;//assignment&lt;/span&gt;
+&lt;span class="n"&gt;X&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt; &lt;span class="n"&gt;X&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="k"&gt;operator&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;X&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt; &lt;span class="n"&gt;rhs&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="n"&gt;X&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt; &lt;span class="n"&gt;X&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="k"&gt;operator&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;X&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="n"&gt;rhs&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This means that we get automatic speed up of code using the STL by moving to c++11 whenever we use pass by value.&lt;/p&gt;
+&lt;p&gt;Before when we ran this:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;vector&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;T&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;vec&lt;/span&gt; &lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The code would call the copy constructor on the vec passed by value, which was wasteful because vec was a temporary. Now, the temporary passed to the function is moved into the function and we save 1/2 the time! The temporary is constructed and moved in, not constructed and copied in.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;iostream&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;chrono&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;cstring&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;hugeArray&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="k"&gt;public&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+    &lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;array&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="kt"&gt;size_t&lt;/span&gt; &lt;span class="n"&gt;size&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+    &lt;span class="n"&gt;hugeArray&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="kt"&gt;size_t&lt;/span&gt; &lt;span class="n"&gt;N&lt;/span&gt; &lt;span class="p"&gt;){&lt;/span&gt;
+        &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;cout&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;constructor&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;endl&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+        &lt;span class="n"&gt;array&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;N&lt;/span&gt;&lt;span class="p"&gt;];&lt;/span&gt;
+        &lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="kt"&gt;size_t&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;N&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="o"&gt;++&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="n"&gt;array&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+
+    &lt;span class="n"&gt;hugeArray&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="n"&gt;hugeArray&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt; &lt;span class="n"&gt;rhs&lt;/span&gt; &lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;delete&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+    &lt;span class="c1"&gt;//hugeArray( const hugeArray&amp;amp; rhs ){&lt;/span&gt;
+    &lt;span class="c1"&gt;//    std::cout &amp;lt;&amp;lt; &amp;quot;copy constructor&amp;quot; &amp;lt;&amp;lt; std::endl;&lt;/span&gt;
+    &lt;span class="c1"&gt;//    // the copy constructor has to copy the contents of rhs.array to array!&lt;/span&gt;
+    &lt;span class="c1"&gt;//    size = rhs.size;&lt;/span&gt;
+    &lt;span class="c1"&gt;//    array = new int[size];&lt;/span&gt;
+    &lt;span class="c1"&gt;//    memcpy( array, rhs.array, size );&lt;/span&gt;
+    &lt;span class="c1"&gt;//}&lt;/span&gt;
+
+    &lt;span class="c1"&gt;//hugeArray( hugeArray&amp;amp;&amp;amp; rhs ) = delete;&lt;/span&gt;
+
+    &lt;span class="n"&gt;hugeArray&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;hugeArray&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="n"&gt;rhs&lt;/span&gt; &lt;span class="p"&gt;){&lt;/span&gt;
+        &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;cout&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;move constructor&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;endl&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+        &lt;span class="c1"&gt;// move constructor just steals the ptr to the rhs.array!&lt;/span&gt;
+        &lt;span class="c1"&gt;// note that the rhs.array is junked, set to nullptr, the rhs is junk now.&lt;/span&gt;
+        &lt;span class="n"&gt;size&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;rhs&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;size&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+        &lt;span class="n"&gt;array&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;rhs&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;array&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+        &lt;span class="n"&gt;rhs&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;array&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;nullptr&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+        &lt;span class="n"&gt;rhs&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;size&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+
+    &lt;span class="o"&gt;~&lt;/span&gt;&lt;span class="n"&gt;hugeArray&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="k"&gt;delete&lt;/span&gt;&lt;span class="p"&gt;[]&lt;/span&gt; &lt;span class="n"&gt;array&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="p"&gt;};&lt;/span&gt;
+
+&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;hugeArray&lt;/span&gt; &lt;span class="n"&gt;ha&lt;/span&gt; &lt;span class="p"&gt;){&lt;/span&gt;
+    &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;cout&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;ha&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;array&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;100&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;endl&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(){&lt;/span&gt;
+    &lt;span class="kt"&gt;size_t&lt;/span&gt; &lt;span class="n"&gt;N&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1000000&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;niter&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;100&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="n"&gt;start&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;chrono&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;steady_clock&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;now&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;niter&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="o"&gt;++&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;hugeArray&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;N&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="n"&gt;end&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;chrono&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;steady_clock&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;now&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+    &lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="n"&gt;diff&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;end&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;start&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;cout&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;chrono&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;duration&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="kt"&gt;double&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;milli&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="n"&gt;count&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="s"&gt;&amp;quot; ms&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;endl&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Note that the above example won't work as described in the Bo videos. This will cause copy elision, and we won't see any performance increase from the move constructor if we compile this with g++. So run this example and toggle the commented line in main() with the std::move line.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;hugeArray&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="k"&gt;public&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+    &lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;array&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="kt"&gt;size_t&lt;/span&gt; &lt;span class="n"&gt;size&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+    &lt;span class="n"&gt;hugeArray&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="kt"&gt;size_t&lt;/span&gt; &lt;span class="n"&gt;N&lt;/span&gt; &lt;span class="p"&gt;){&lt;/span&gt;
+        &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;cout&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;constructor&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;endl&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+        &lt;span class="n"&gt;array&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;N&lt;/span&gt;&lt;span class="p"&gt;];&lt;/span&gt;
+        &lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="kt"&gt;size_t&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;N&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="o"&gt;++&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="n"&gt;array&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+
+    &lt;span class="c1"&gt;//hugeArray( const hugeArray&amp;amp; rhs ) = delete;&lt;/span&gt;
+
+    &lt;span class="n"&gt;hugeArray&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="n"&gt;hugeArray&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt; &lt;span class="n"&gt;rhs&lt;/span&gt; &lt;span class="p"&gt;){&lt;/span&gt;
+        &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;cout&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;copy constructor&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;endl&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+        &lt;span class="n"&gt;size&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;rhs&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;size&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+        &lt;span class="n"&gt;array&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;size&lt;/span&gt;&lt;span class="p"&gt;];&lt;/span&gt;
+        &lt;span class="n"&gt;memcpy&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;array&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;rhs&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;array&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;size&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+
+    &lt;span class="c1"&gt;//hugeArray( hugeArray&amp;amp;&amp;amp; rhs ) = delete;&lt;/span&gt;
+
+    &lt;span class="n"&gt;hugeArray&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;hugeArray&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="n"&gt;rhs&lt;/span&gt; &lt;span class="p"&gt;){&lt;/span&gt;
+        &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;cout&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;move constructor&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;endl&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+        &lt;span class="c1"&gt;// move constructor just steals the ptr to the rhs.array!&lt;/span&gt;
+        &lt;span class="c1"&gt;// note that the rhs.array is junked, set to nullptr, the rhs is junk now.&lt;/span&gt;
+        &lt;span class="n"&gt;size&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;rhs&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;size&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+        &lt;span class="n"&gt;array&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;rhs&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;array&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+        &lt;span class="n"&gt;rhs&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;array&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;nullptr&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+        &lt;span class="n"&gt;rhs&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;size&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+
+    &lt;span class="o"&gt;~&lt;/span&gt;&lt;span class="n"&gt;hugeArray&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="k"&gt;delete&lt;/span&gt;&lt;span class="p"&gt;[]&lt;/span&gt; &lt;span class="n"&gt;array&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="p"&gt;};&lt;/span&gt;
+
+&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;hugeArray&lt;/span&gt; &lt;span class="n"&gt;ha&lt;/span&gt; &lt;span class="p"&gt;){&lt;/span&gt;
+    &lt;span class="n"&gt;assert&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;ha&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;array&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;100&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;100&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(){&lt;/span&gt;
+    &lt;span class="kt"&gt;size_t&lt;/span&gt; &lt;span class="n"&gt;N&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1000000&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;niter&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;100&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="n"&gt;start&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;chrono&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;steady_clock&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;now&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;niter&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="o"&gt;++&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="n"&gt;hugeArray&lt;/span&gt; &lt;span class="n"&gt;ha&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;N&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+        &lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;ha&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt;
+        &lt;span class="c1"&gt;//foo( std::move(ha) );&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="n"&gt;end&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;chrono&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;steady_clock&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;now&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+    &lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="n"&gt;diff&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;end&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;start&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;cout&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;chrono&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;duration&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="kt"&gt;double&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;milli&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="n"&gt;count&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="s"&gt;&amp;quot; ms&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;endl&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;If you compile the above as g++ -std=c++11 -O0 $CPPFILE you will see the incredible performance increase from using move.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="perfect-forwarding"&gt;
+&lt;h2&gt;Perfect Forwarding&lt;/h2&gt;
+&lt;p&gt;Perfect forwarding, not port forwarding. Here's what its about:&lt;/p&gt;
+&lt;blockquote&gt;
+Why is this useful? Well, it means that a function template can pass its arguments through to another function whilst retaining the lvalue/rvalue nature of the function arguments by using std::forward. This is called &amp;quot;perfect forwarding&amp;quot;, avoids excessive copying, and avoids the template author having to write multiple overloads for lvalue and rvalue references. - from ` here &amp;lt;http://www.justsoftwaresolutions.co.uk/cplusplus/rvalue_references_and_perfect_forwarding.html/&amp;gt;`_ .&lt;/blockquote&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;template&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;T&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;relay&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;T&lt;/span&gt; &lt;span class="n"&gt;arg&lt;/span&gt; &lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;arg&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Requirements / wishes for this template:
+1. No costly, unnecessary copies of data.
+2. The type of the arg passed to foo() should be the same type as the arg passed to relay().&lt;/p&gt;
+&lt;p&gt;If these conditions are met, we have perfect forwarding! The solution to achieve this is to rewrite relay( ) like this:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;template&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="k"&gt;typename&lt;/span&gt; &lt;span class="n"&gt;T&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;relay&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;T&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="n"&gt;arg&lt;/span&gt; &lt;span class="p"&gt;){&lt;/span&gt;
+    &lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;forward&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;T&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;arg&lt;/span&gt; &lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;We can reason out the correctness of this approach using the C++ reference collapsing rules:&lt;/p&gt;
+&lt;ol class="arabic simple"&gt;
+&lt;li&gt;T&amp;amp; &amp;amp;   ==&amp;gt; T&amp;amp;&lt;/li&gt;
+&lt;li&gt;T&amp;amp; &amp;amp;&amp;amp;  ==&amp;gt; T&amp;amp;&lt;/li&gt;
+&lt;li&gt;T&amp;amp;&amp;amp; &amp;amp;  ==&amp;gt; T&amp;amp;&lt;/li&gt;
+&lt;li&gt;T&amp;amp;&amp;amp; &amp;amp;&amp;amp; ==&amp;gt; T&amp;amp;&amp;amp;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;as Bo Qian says - the single ref is infectious! Also, what is std::forward()?&lt;/p&gt;
+&lt;ol class="arabic simple"&gt;
+&lt;li&gt;std::move&amp;lt;T&amp;gt;( arg ); //turns arg into an rvalue type&lt;/li&gt;
+&lt;li&gt;std::forward&amp;lt;T&amp;gt;( arg ); //turns arg into a T&amp;amp;&amp;amp; type.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;See the video C++11 Rvalue Reference - Perfect Forwarding for more information!&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="references"&gt;
+&lt;h2&gt;References&lt;/h2&gt;
+&lt;ol class="arabic simple"&gt;
+&lt;li&gt;&lt;a class="reference external" href="https://www.youtube.com/watch?v=IOkgBrXCtfo&amp;amp;index=3&amp;amp;list=PL5jc9xFGsL8FWtnZBeTqZBbniyw0uHyaH/"&gt;Bo's video 1&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference external" href="https://www.youtube.com/watch?v=0xcCNnWEMgs&amp;amp;list=PL5jc9xFGsL8FWtnZBeTqZBbniyw0uHyaH&amp;amp;index=4/"&gt;Bo's video 2&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference external" href="https://stackoverflow.com/questions/3413470/what-is-stdmove-and-when-should-it-be-used/"&gt;Stackoverflow post. Link might die but it's good right now.&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference external" href="https://www.youtube.com/watch?v=PNRju6_yn3o/"&gt;Scary video about move semantics and OOP&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+</summary><category term="c++"></category></entry><entry><title>A couple of notes about TensorFlow, Docker, and Data Formatting</title><link href="https://melvyniandrag.github.io/about-tensorflow-docker-and-dataformatting.html" rel="alternate"></link><updated>2018-06-22T01:59:00+02:00</updated><author><name>Melvyn Drag</name></author><id>tag:melvyniandrag.github.io,2018-06-22:about-tensorflow-docker-and-dataformatting.html</id><summary type="html">&lt;p&gt;I've just seriously started working with Docker and Tensorflow after a long hiatus from machine learning, during which time I've learned alot about Linux, C++, embedded systems and more.&lt;/p&gt;
+&lt;p&gt;Now that I'm returning to the machine learning / gpgpu / higher level programming world I want to make a few quick notes for my own memory's sake and to propose an experiment that I'll try to carry out tonight or in the next few days.&lt;/p&gt;
+&lt;p&gt;To start, though, here is a basic Dockerfile I'm using to setup my cpu tensorflow environment.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;WORKDIR /app
+
+ADD . /app
+
+RUN apt-get update
+RUN pip install --trusted-host pypi.python.org -r requirements.txt
+RUN apt-get --assume-yes install python3-pip python3-dev
+RUN pip3 install --upgrade tensorflow
+
+EXPOSE 80
+
+ENV NAME World
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This file gets you up and running with docker and tensorflow.&lt;/p&gt;
+&lt;p&gt;If you check out the mnist dataset that is built into tensorflow at &amp;quot;mnist = tf.contrib.learn.datasets.load_dataset(&amp;quot;mnist&amp;quot;)&amp;quot;, if you &amp;quot;print(mnist.train.images.shape)&amp;quot; you'll see the shape is (55000,  784). Seems weird that a 2d array stores a bunch of images. Turns out from &lt;a class="reference external" href="http://yann.lecun.com/exdb/mnist/index.html"&gt;http://yann.lecun.com/exdb/mnist/index.html&lt;/a&gt; that they have 55k train images that are 20x20 but padded to 28x28 and 28*28 = 784 so that means that the images were flattened along an axis. An interesting question arises - do alternative flattenings change the results output by the CNN?&lt;/p&gt;
+&lt;p&gt;Option 1 is to flatten along the other axis. A more interesting option is to create a mapping for pixel indices, like pixel[1][100] -&amp;gt; output[355] or something and do that for all pixels in the image and use the same mapping across the whole dataset. Going to experiment with that later tonight or tomorrow as now I'm just working on tinkering with setting up my environment in diff. ways and exploring docker.&lt;/p&gt;
+</summary><category term="tensorflow"></category><category term="docker"></category><category term="machine learning"></category></entry><entry><title>FP vs OOP</title><link href="https://melvyniandrag.github.io/FP%20vs%20OOP.html" rel="alternate"></link><updated>2018-03-15T22:20:00+01:00</updated><author><name>Melvyn Drag</name></author><id>tag:melvyniandrag.github.io,2018-03-15:FP vs OOP.html</id><summary type="html">&lt;div class="section" id="id1"&gt;
+&lt;h2&gt;FP vs OOP&lt;/h2&gt;
+&lt;p&gt;I've been working on a large C++/Java project at work and have found that OOP is not without it's pitfalls.&lt;/p&gt;
+&lt;p&gt;I've been writing classes for everything and loving them for years for academic and personal projects, but did more functional/procedural coding when I was working in datascience. For me, functional programming is all about functions taking values as parameters and returning values without mutating state. Global variables being mutated inside functions would be again the FP philosophy and it does add complexity to a program because it is difficult to know the value of the variable at any point in time.&lt;/p&gt;
+&lt;p&gt;I've always had a little bit of fear of global variables, but I understand from and optimization / resource constrained perspective they can be useful. But OOP seems to create lots of little environments with their own nefarious global variables. m_memberVariable is global within a class and when there are many member functions mutating the member variables it can become extremely unwieldy to maintain in certain large, complex classes.&lt;/p&gt;
+&lt;p&gt;Programming is complex, there's no way around it.&lt;/p&gt;
+&lt;p&gt;Interested one day to do more serious scala projects than the little hobby things I've done to think more about the fusion of the two styles.&lt;/p&gt;
+&lt;/div&gt;
+</summary><category term="c++ functional FP"></category></entry><entry><title>Came Up Fast And Got the Benz</title><link href="https://melvyniandrag.github.io/2000%20Mercedes%20Benz%20S500.html" rel="alternate"></link><updated>2018-03-01T00:00:00+01:00</updated><author><name>Melvyn Drag</name></author><id>tag:melvyniandrag.github.io,2018-03-01:2000 Mercedes Benz S500.html</id><summary type="html">&lt;div class="section" id="introduction"&gt;
+&lt;h2&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;Came up fast and got the benz. My buddy says that this is a shitty rap line. I think it's brilliant
+word play that relates climbing the socioeconomic ladder to scuba diving. In any event, this
+blog post is about the perils and the glories of owning a 17 year old luxury car that was bought in rough
+shape for only $1450.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="about-the-1450-2000-s500"&gt;
+&lt;h2&gt;About the $1450 2000 S500&lt;/h2&gt;
+&lt;p&gt;This post would be better with pics and videos but I don't have them on my laptop and wont get on my desktop for a few days.&lt;/p&gt;
+&lt;p&gt;The beautiful, rust free 5-speed Red Ford Ranger developed a series of crippling problems faster
+than they could be economically fixed. The straw that broke the camel's back was a loss of power and a loud noise when in gear.
+I suspected the input shaft bearing, but who knows what it was. It started out only in second gear but then
+slowly progressed to make the horrific noise in all gears. It wasn't a metallic or grinding sound so I figures it was something simpler.
+Nevertheless between work and kids and friends and hobbies it didn't feel like spending time and money on
+installing a new transmission in the car, so it was hastily sold to a guy up the block for $150 bucks.
+I think it was a good deal, it had new calipers, pads, rotors, a windshield, alternator, struts,
+tires, and the engine was still quiet and not leaking a drop of anything.&lt;/p&gt;
+&lt;p&gt;Over the next few weeks I fought a mental battle between leasing/financing a new car and taking on debt or finding
+an acceptable japanese car for a few thousand dollars that would keep me debt free. The only used car under 5k on Craigslist
+was a 2000 S500 that had a slow leak in the front passenger side tire, a busted blower motor, a sunroof that wouldn't budge and a bald drivers side tire. The pictures online showed a license plate on the car and it was right up the road in a
+nice town of kind people in Webster, NH. I figured there couldn't be anything wrong with it.&lt;/p&gt;
+&lt;p&gt;As soon as I bought the car I opened her up. I'd never owned a 300+ hp v8 car before. 30 seconds into ownership
+the check engine light came on, it vibrated aggressively and lost power. I'd heard of misfires before but never experienced one.&lt;/p&gt;
+&lt;p&gt;I limped it home and researched what to do. This problem hadn't surfaced on the test drive I'd taken, the guy was nice enough and
+seemed pretty transparent. We jacked the car up and I looked and ball joints and bearings. The rear suspension was a little rough
+but this was a $1450 car that ran, had no leaks, and was quite comfy. I forgot to mention that the heated seats weren't working either
+but that was not essential. Anyway, it seems a misfire can be caused mainly by a bag ignition system or
+poor compression, probably from a blown head gasket. The cheap chinese scanner I had was showing misfires in cylinders
+3 and 5 and also a code for a random misfire. I googled to find if 3 and 5 were adjacent in this engine, which might indicate a headgasket blown between them but couldn't find a straight answer online about the cylinder ordering. Of course the )(&amp;#64;$&amp;amp;Q($Q(WEFH at MB don't
+release repair information so I couldn't find an official source to tell me which cylinder was which.&lt;/p&gt;
+&lt;p&gt;I guess all this didn't matter because the misfire resolved itself within  minutes. It would come back under aggressive information over the next few months, and to me this indicated a bad wire that was bending a certain way under load causing a misfire. Never got around to fixing it because
+after manifesting itself several times in September the problem didn't come back (as of 03/18 ). I wanted to take the plugs out and look for fouling but didnt get around to starting this project for a few weeks while I debated buying the $30 wrench needed to pry the boots off the plugs (the plugs are so deep in the engine and at such an angle that you need a specially bent wrench to pry the boots off. Strike 2 agains MB in my book, after the absence of repair information. Eventually I managed to get a plug out and it looked fine but I was absolutely terrified to do anymore than that because they were kind of hidden behind other engine components an I knew my clumsy self would snap a plug head off and have to spend a fortune at the mechanic.
+So the misfire was just ignored and to this day I just drive carefully.&lt;/p&gt;
+&lt;p&gt;Other problems have come up over time. The license plate lights didnt work when I bought the car ( forgot to mention that ). I got my trusy multimeter out and traced the wiring to a module under the seat, which it turns out is called the SAM (signal acquisition module). A used one on ebay is 1-2 hundred bucks. To have the shop order one from their guys and install it should cost about $800. There were a bunch of switches on the dash that didn't work anymore , and still don't, like the suspension adjustment button. I guess they might be controlled by the rear SAM as well. When I have a free weekend I'll probably swap it, but I'm just scared to death to touch anything in this high tech car because it is so damned finicky. I endedup just busting out the old bulb mounts (which were totally rusted and useless) and discreetly ziptieing some long-living hid flash lights in their place. No problems with the cops in 6 months and I've only had to replace batteries once. A more sophisticated alternative would be to run a parallel line around the tail lights to some replacement license plate bulbs. Voltage in parallel is constant so provided I could find something drawing the ~12V that the license plate bulbs drew, I could supply the same voltage to the license plate lights. But, as I've said, this damned car is so finicky and high tech. I just know it would have detected the extra current being drawn and freaked out. So it's just going to be flash lights until the SAM is replaced.&lt;/p&gt;
+&lt;p&gt;Another problem with the car I forgot to mention was that the wiper blade was bad wehn I bought it. The seller included a wiper but it didn't fit. Turns out that the S500 uses a clip that is wider that then clips you find on the blades at Autozone et. al. Another strike for fucking mercedes, why not use a standard wiperblade! The set of two cost me $65. Not the end of the world, but still quite pricey for wiper blades.&lt;/p&gt;
+&lt;p&gt;And yet another problem with the car when I bought it was that the passenger side HID bulb was burned out. I bought a $100 bulb which also burned out shortly after. I hadnt done the swap with gloves on though because I thought that people were just exaggerating when they
+said that the oils from your hands could damage the bulbs. I subsequently bought a bunch of cheap korean bulbs and a $50 german bulb from Sanels auto store in Concord ( I really like the store! well stocked and personable people! ).I swapped the bulb again ( this time disconnecting the battery before touching the wires - I could have died!! I had no idea that there was so much voltage in this system until I accidentally found out it could have killed me ) and it was good for months. Then I swapped 2 bulbs at the same time because the korean bulbs were dimmer than the German bulbs. Now it's been a few more months without trouble, but you never know, it could come back.&lt;/p&gt;
+&lt;p&gt;When the first snow fell this winter the car was squirrely as all hell. I got stuck at the bottom of a big hill on my way to pick up Phoebe and had to fight for many tens of minutes to get up the hill - it was time for new tires. I knew the old ones weren't great, but I didn't realize just how awful they were until the snow came. (ALSO forgot to mentionthat the slow leaking tire wasn't a slow leaking tire, I had to buy a set of new rims because the front passenger rim was cracked and to get it welded would have cost ~$300. The rims were 18&amp;quot; and I couldn't find a suitable cheap replacement 18&amp;quot; pair. So I bought a set of 4 17&amp;quot; rims with 2 good tires and 2 bad tires for $300 on CL from a guy who , interestingly enough, used to work at DEKA.). Those were the tires that were slipping. So I had to go to tire warehouse and buy a $500 set of snow tires. I've never had such a wonderful winter driving experience. Everyone should buy snow tires in winter.&lt;/p&gt;
+&lt;p&gt;Lastly, the car started to behave weird at speed, kind of drifting a bit. Turns out it was balljoints. The cost to repair the ball joints that were pressed into the knuckles was just shy of $600. The car was still a little drifty after that and made a bit of noise so I went to another shop and paid another 300 to have the front driver's side wheel bearing replaced. The wheel bearing may have been fine, but the ball joints were bad, I think, I don't know much about either. The ball joints had a bit of up and down play, which I don't think they are supposed to have but I'm not sure. The car started making a whirring noise while I was driving through Manhattan and the whirring was not related to braking. I guessed a wheel bearing and the shop was happy to replace the bearing - but they did tell me that some shield had been bent and I guess that's what was causing the whirring. I keep my tires areound 40 psi out of ignorance (the sidewall says max psi = 45 so I just put a bit less). The gas tank cover, however, says to put 29 in the front and 32 or so ( can't remember right now) in the back.  But I wonder how they would recommend a pressure, given that they don't know the tires I put on and don't know what rim size I have. Long story short, I don't know if a bit of up and down in the ball joint is okay. Each dust boot had a small cut in it which would permit dirt to enter. I wonder if the guys at the shop just put a cut in the ball joint dustboots so that eventually I'd need a repair. The very personable shop owner in Concord NH let me leave the shop with the knowledge that I'd be driving ~70 miles a day on what he called &amp;quot;very worn&amp;quot; ball joints - that made me thin kthey weren't that bad because a bad joint could kill me! In any event, the car has new ball joints and a new wheel bearing, my mind is at ease, and I have some maintenance receipts in case I decide to sell the car.&lt;/p&gt;
+&lt;p&gt;Another point I forgot to mention - the pneumatic door locks / trunk opener stopped working a few months ago. I had been just using the key to manually unlock the door but one time there was considerable resistance and I got scared that the car would get stuck locked, so I haven't locked it in months. There is likely a leak in the pneumatic pump thingy in the trunk or a hose has become unseated. Havent had time to check it out, so the car has just been unlocked. Thank god I'm not in Newark NJ.&lt;/p&gt;
+&lt;p&gt;Heated seats have never worked.&lt;/p&gt;
+&lt;p&gt;Driver side side-view mirror has some issue whereby it is tinted a bit orange and sort of gives a double reflection, I suspect there is a rear plate in it that is messed up. Kind of how there is a rear reflector in the rear-view mirror.&lt;/p&gt;
+&lt;p&gt;The car has alot of external rust.&lt;/p&gt;
+&lt;p&gt;I could say more but this should suffice for now. I've spent, all things considered, 3K or so on this car. I've had it since August or so, and when I bought it I was hoping to get at least 3 months out of the car. Guess I'm ahead now. Considering buying a replacement engine and tranny to keep in storage just in case. I guess my next car will be a honda or toyota, but this one is good.&lt;/p&gt;
+&lt;/div&gt;
+</summary><category term="cars mercedes diy mechanics"></category></entry><entry><title>Hacktoberfest! Coding for a free shirt.</title><link href="https://melvyniandrag.github.io/Hacktoberfest%20tshirt.html" rel="alternate"></link><updated>2017-10-12T22:20:00+02:00</updated><author><name>Melvyn Drag</name></author><id>tag:melvyniandrag.github.io,2017-10-12:Hacktoberfest tshirt.html</id><summary type="html">&lt;div class="section" id="what-is-hacktoberfest"&gt;
+&lt;h2&gt;What is hacktoberfest?&lt;/h2&gt;
+&lt;p&gt;Github and digital ocean are giving anyone who makes four pull requests in october a free tshirt. The owners of these businesses must be doing a great job if they have the excess capital to fund such a crazy initiative! Now's a great time to get involved in open source. I've gotten involved in a few interesting projects done by some talented developers that have taught me alot.&lt;/p&gt;
+&lt;ol class="arabic simple"&gt;
+&lt;li&gt;&lt;a class="reference external" href="https://github.com/sahildua2305/hackIDE/"&gt;hackIDE&lt;/a&gt; is a site like ideone. It's a compiler / interpreter / text editor. It'sa django project with a responsive front end thanks to bootstrap and features a lot of interesting javascript. I've never worked on someone else's web development project, I always tinker on my own stuff. It has been very interesting to work on &lt;a class="reference external" href="http://sahildua.com/"&gt;Sahil Dua's&lt;/a&gt; project,&lt;/li&gt;
+&lt;li&gt;Tensorflow. Everyone knows about tensorflow, right? It's google's neural net framework. To make package maintenance easier they use docker containers. I've been hearing about docker for years but stayed away from it because I was busy doing good work and didn't need another tool, no matter how cutting edge and interesting everyone said it was. Turns out, its fantastic. It's kind of like a virtual environment / virtual machine, but a bit different - any one of the many youtube vids will explain the distinctions. It makes it easier to distribute code because you can ship a machine image along with the code which guarantees that everyone will have the dependencies satisfied and not pull his or her hair out trying to install the right packages without ruining their own environment.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;I worked on the tensorflow docker docuementation and then got into docker and started making my own docker images for fun. Also, there is a &lt;a class="reference external" href="dockerhub/"&gt;dockerhub&lt;/a&gt; kinda like github where you can upload your docker files and then other people can download them and have the same environment image you had. A link to you docker file on dockerhub can be distributed with your github code that will make it easier to compile. OpenCV could maybe use a set of docker images, that might be helpful.&lt;/p&gt;
+&lt;/div&gt;
+</summary><category term="django web-dev python"></category></entry><entry><title>TinkerCAD</title><link href="https://melvyniandrag.github.io/tinkercad.html" rel="alternate"></link><updated>2017-10-12T22:20:00+02:00</updated><author><name>Melvyn Drag</name></author><id>tag:melvyniandrag.github.io,2017-10-12:tinkercad.html</id><summary type="html">&lt;div class="section" id="id1"&gt;
+&lt;h2&gt;TinkerCAD!&lt;/h2&gt;
+&lt;p&gt;3D printing has been all the rage for years now. There is so much tech out there, it's tough to keep up with. Until the last couple of years I thought 3d printing would just be for making crude plastic shapes as a gimmick. It has turned out to be a rich industry / technology with lots of options for printers and CAD softwares, and the quality of the output is very good.
+TinkerCAD is a free, super user friendly CAD software that you can use to design an object for a 3d printer! It comes with a super easy to use &lt;a class="reference external" href="tinkercad.com/"&gt;web interface&lt;/a&gt;. It also has the really cool ability to be scripted in javascript, so you can design really funky shapes using code! I guess you could design anything with the scripting api, but there are probably structural constraints. Since the printer is spitting out molten plastic, you probably can't get tooooo crazy with what you script, because it may not be stable. But then again, who knows? I've never printed one of the things I've designed. I'm sure the stability of the output is a function of the material, print speed, and print temperature. And other factors.&lt;/p&gt;
+&lt;p&gt;Here's a cool JS script that prints a cube. Saw it on &lt;a class="reference external" href="https://www.youtube.com/watch?v=yLDwIQ0MPvA/"&gt;youtube&lt;/a&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c1"&gt;// Convenience Declarations For Dependencies.&lt;/span&gt;
+&lt;span class="c1"&gt;// &amp;#39;Core&amp;#39; Is Configured In Libraries Section.&lt;/span&gt;
+&lt;span class="c1"&gt;// Some of these may not be used by this example.&lt;/span&gt;
+&lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;Conversions&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;Core&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Conversions&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;Debug&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;Core&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Debug&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;Path2D&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;Core&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Path2D&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;Point2D&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;Core&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Point2D&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;Point3D&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;Core&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Point3D&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;Matrix2D&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;Core&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Matrix2D&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;Matrix3D&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;Core&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Matrix3D&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;Mesh3D&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;Core&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Mesh3D&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;Plugin&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;Core&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Plugin&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;Tess&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;Core&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Tess&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;Sketch2D&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;Core&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Sketch2D&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;Solid&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;Core&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Solid&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;Vector2D&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;Core&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Vector2D&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;Vector3D&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;Core&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Vector3D&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+
+&lt;span class="c1"&gt;// Template Code:&lt;/span&gt;
+&lt;span class="cm"&gt;/*&lt;/span&gt;
+&lt;span class="cm"&gt;  Empty shape example.&lt;/span&gt;
+
+&lt;span class="cm"&gt;  Tinkercad developer documentation is at:&lt;/span&gt;
+&lt;span class="cm"&gt;     https://tinkercad.com/developer/&lt;/span&gt;
+
+&lt;span class="cm"&gt;  To create parameters in the user interface,&lt;/span&gt;
+&lt;span class="cm"&gt;  create a &amp;#39;params&amp;#39; array on the top level of this script.&lt;/span&gt;
+&lt;span class="cm"&gt;  For example:&lt;/span&gt;
+&lt;span class="cm"&gt;  params = [&lt;/span&gt;
+&lt;span class="cm"&gt;  { &amp;quot;id&amp;quot;: &amp;quot;radius&amp;quot;, &amp;quot;displayName&amp;quot;: &amp;quot;Radius&amp;quot;, &amp;quot;type&amp;quot;: &amp;quot;length&amp;quot;, &amp;quot;rangeMin&amp;quot;: 1, &amp;quot;rangeMax&amp;quot;: 50, &amp;quot;default&amp;quot;: 20 }&lt;/span&gt;
+&lt;span class="cm"&gt;  ]&lt;/span&gt;
+&lt;span class="cm"&gt;*/&lt;/span&gt;
+
+&lt;span class="kd"&gt;function&lt;/span&gt; &lt;span class="nx"&gt;process&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;params&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+  &lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;mesh&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="nx"&gt;Mesh3D&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+
+  &lt;span class="nx"&gt;mesh&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;quad&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;  &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;  &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;  &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt;
+  &lt;span class="nx"&gt;mesh&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;quad&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;  &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;  &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;  &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt;
+  &lt;span class="nx"&gt;mesh&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;quad&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt;
+  &lt;span class="nx"&gt;mesh&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;quad&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt;
+  &lt;span class="nx"&gt;mesh&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;quad&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt;
+  &lt;span class="nx"&gt;mesh&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;quad&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt;
+
+
+  &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nx"&gt;Solid&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;make&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;mesh&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+</summary><category term="diy cad fun"></category></entry><entry><title>Installing Tensorflow! Notes to self.</title><link href="https://melvyniandrag.github.io/Installing-tensorflow.html" rel="alternate"></link><updated>2017-10-05T22:20:00+02:00</updated><author><name>Melvyn Drag</name></author><id>tag:melvyniandrag.github.io,2017-10-05:Installing-tensorflow.html</id><summary type="html">&lt;div class="section" id="introduction"&gt;
+&lt;h2&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;I've been wanting to install tensorflow for a while and play around with it. Then a cool adversarial machine learning project was on Kaggle, so I entered it - the contest used tensorflow! Unfortunately (or so I thought at the time) it also used docker. And so I read a bit about docker, read a tiny bit about tensorflow, read a couple of papers on adversarial machine learning, but it was no use. I felt drowned in a sea of new stuff, and my full time job and personal obligations didn't allow me to invest the necessary time to see what was going on. Days after the contest ended, it all made sense.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="installing-tensorflow-with-docker"&gt;
+&lt;h2&gt;Installing Tensorflow with Docker&lt;/h2&gt;
+&lt;p&gt;I have recently installed opencv on my new computer, and I installed opencv to work with cudnn 5. Unfortunately, the tensorflow page says to use cudnn6, or else build the library from sources (no thanks). But it also offered a docker install. I said to myself, it seems easier than messing around with cuda libraries and modding my PATH and LD_LIBRARY_PATH, so I went for docker.&lt;/p&gt;
+&lt;p&gt;It's pretty much a virtual environment for your process that installs all of the necessary libraries and tools for the code to run! And you can clone environments from a repository online where users can submit their configurations, kinda like github but for environments. The folks at tensorflow maintain their own docker containers, including one for gpu support - so no cudnn upgrade / opencv break necessary!&lt;/p&gt;
+&lt;p&gt;I installed nvidia-docker following the steps on the website, and then I just started using the tensor flow image!&lt;/p&gt;
+&lt;p&gt;This will give you a shell to enter commands in:&lt;/p&gt;
+&lt;p&gt;nvidia-docker run -it  gcr.io/tensorflow/tensorflow:latest-gpu bash&lt;/p&gt;
+&lt;p&gt;This will bring up a jupyter notebook with some tutorial stuff.&lt;/p&gt;
+&lt;p&gt;nvidia-docker run -it -p 8888:8888 gcr.io/tensorflow/tensorflow:latest-gpu&lt;/p&gt;
+&lt;p&gt;So far as I can tell the -p 8888:8888 routes the container localhost to your localhost so you can access the jupyter notebook in your browser. It also seems that if you follow the container name with a program, like bash, then that program is run in the indicated environment.&lt;/p&gt;
+&lt;p&gt;I saw a warning online about using the latest container image, and I may look for an older stable on in the future if I hit a wall when playing around with tensorflow. Otherwise, it seems like smooth sailing. If only I had figured out what docker was all about while the contest was running, maybe I could have focused more on playing around with tensorflow. You live and you learn!&lt;/p&gt;
+&lt;/div&gt;
+</summary><category term="tensorflow docker python machine-learning"></category></entry><entry><title>Maintaining State In Django</title><link href="https://melvyniandrag.github.io/Maintaining-django-application-state.html" rel="alternate"></link><updated>2017-08-13T22:20:00+02:00</updated><author><name>Melvyn Drag</name></author><id>tag:melvyniandrag.github.io,2017-08-13:Maintaining-django-application-state.html</id><summary type="html">&lt;div class="section" id="introduction"&gt;
+&lt;h2&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;The way I've learned to develop a django site is to pass information from page to page through dictionaries that are received from a POST. For example, if you want to pass the value A = 1 from one page to another would be like this:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="solution"&gt;
+&lt;h2&gt;Solution&lt;/h2&gt;
+&lt;/div&gt;
+</summary><category term="django web-dev python"></category></entry><entry><title>How I Made This Page</title><link href="https://melvyniandrag.github.io/how-i-made-this-page.html" rel="alternate"></link><updated>2017-05-03T22:20:00+02:00</updated><author><name>Melvyn Drag</name></author><id>tag:melvyniandrag.github.io,2017-05-03:how-i-made-this-page.html</id><summary type="html">&lt;p&gt;I followed a tutorial to make this page! &lt;a class="reference external" href="https://fedoramagazine.org/make-github-pages-blog-with-pelican/"&gt;https://fedoramagazine.org/make-github-pages-blog-with-pelican/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Then, I used the Flex Pelican theme documentation to get the nice look of the page.  &lt;a class="reference external" href="https://github.com/alexandrevicenzi/Flex"&gt;https://github.com/alexandrevicenzi/Flex&lt;/a&gt; Here is a sample config file that I used as a template for Flex. &lt;a class="reference external" href="https://github.com/alexandrevicenzi/blog/blob/master/pelicanconf.py"&gt;https://github.com/alexandrevicenzi/blog/blob/master/pelicanconf.py&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;As you can see, I haven't yet looked into how to use RST to make the links on the page more appealing. It's already midnight and I'm tired!&lt;/p&gt;
+</summary><category term="first"></category></entry><entry><title>How I Made This Page</title><link href="https://melvyniandrag.github.io/this%20is%20only%20a%20test.html" rel="alternate"></link><updated>2017-05-03T22:20:00+02:00</updated><author><name>Melvyn Drag</name></author><id>tag:melvyniandrag.github.io,2017-05-03:this is only a test.html</id><summary type="html">&lt;p&gt;I followed a tutorial to make this page! &lt;a class="reference external" href="https://fedoramagazine.org/make-github-pages-blog-with-pelican/"&gt;https://fedoramagazine.org/make-github-pages-blog-with-pelican/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Then, I used the Flex Pelican theme documentation to get the nice look of the page.  &lt;a class="reference external" href="https://github.com/alexandrevicenzi/Flex"&gt;https://github.com/alexandrevicenzi/Flex&lt;/a&gt; Here is a sample config file that I used as a template for Flex. &lt;a class="reference external" href="https://github.com/alexandrevicenzi/blog/blob/master/pelicanconf.py"&gt;https://github.com/alexandrevicenzi/blog/blob/master/pelicanconf.py&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;As you can see, I haven't yet looked into how to use RST to make the links on the page more appealing. It's already midnight and I'm tired!&lt;/p&gt;
+</summary><category term="first"></category></entry><entry><title>Troubleshooting the gensim implementation of Doc2Vec</title><link href="https://melvyniandrag.github.io/about-gensim-and-doc2vec.html" rel="alternate"></link><updated>2017-01-25T02:40:00+01:00</updated><author><name>Melvyn Drag</name></author><id>tag:melvyniandrag.github.io,2017-01-25:about-gensim-and-doc2vec.html</id><summary type="html">&lt;p&gt;This adventure started when I was experimenting with the (wonderful) implementation of Doc2Vec in the &lt;a class="reference external" href="https://github.com/RaRe-Technologies/gensim/"&gt;gensim&lt;/a&gt; package.&lt;/p&gt;
+&lt;p&gt;I was experimenting with Doc2Vec to get a handle on it, and wrote the following code, which kept throwing an error.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;gensim&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;multiprocessing&lt;/span&gt;
+
+&lt;span class="n"&gt;dirname&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;/home/temp/nltk_data/corpora/brown&amp;quot;&lt;/span&gt;
+&lt;span class="n"&gt;documents&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;gensim&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;models&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;doc2vec&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;TaggedBrownCorpus&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;dirname&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;cores&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;multiprocessing&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;cpu_count&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;model&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;gensim&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;models&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Doc2Vec&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;dm&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;dbow_words&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;size&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;200&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;window&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;min_count&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;19&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;iter&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;workers&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;cores&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;build_vocab&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;documents&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;train&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;documents&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="c1"&gt;# I&amp;#39;ll explain the doc_of_interest in a minute.&lt;/span&gt;
+&lt;span class="n"&gt;doc_of_interest&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;/home/temp/nltk_data/corpora/brown/ca01_SENT_0&amp;quot;&lt;/span&gt;
+&lt;span class="n"&gt;like_doc_of_interest&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;docvecs&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;most_similar&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;positive&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;doc_id&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;topn&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;like_doc_of_interest&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;And this code was throwing the following error.&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+/home/temp/anaconda3/lib/python3.5/site-packages/gensim/models/doc2vec.py&amp;quot;, line 448, in most_similar
+elif doc in self.doctags or doc &amp;lt; self.count:
+TypeError: unorderable types: str() &amp;lt; int()
+&lt;/pre&gt;
+&lt;p&gt;At this point I knew we were in for the standard procedure of working on code in a linux environment: Find the source code, read it carefully for  a few hours, scratch our heads, swear a bit, and then realize what hair-brained thing is going on before proceeding to fix it. I had been playing iwith doc2vec earlier in the day and had already seen this error and intuited that it meant the the doc_id you are passing to the most_similar function doesn't exist. I didn't know how the TaggedBrownCorpus class worked, but in the &lt;a class="reference external" href="https://github.com/RaRe-Technologies/gensim/blob/develop/gensim/models/doc2vec.py"&gt;source&lt;/a&gt; it said that it takes a dirname parameter - I correctly guessed that they meant the location of the brown corpus in your nltk download. This was strange to me because in the NLTK package if you&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;nltk.corpus&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;brown&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;and you haven't yet installed the corpus with the nltk.download() command, it spits out an error saying that it can't find the corpus, and then spits out a list of standard search paths that it has checked. But gensim didn't do that so that seemed weird - this is an idea for a simple pull request for someone to work on and send.&lt;/p&gt;
+&lt;p&gt;Anyway, I looked at the TaggedBrownCorpus class in the source&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;TaggedBrownCorpus&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;object&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;&amp;quot;&amp;quot;&amp;quot;Iterate over documents from the Brown corpus (part of NLTK data), yielding&lt;/span&gt;
+&lt;span class="sd"&gt;    each document out as a TaggedDocument object.&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;dirname&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dirname&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;dirname&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__iter__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;fname&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;listdir&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dirname&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+            &lt;span class="n"&gt;fname&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dirname&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;fname&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;isfile&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fname&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+                &lt;span class="k"&gt;continue&lt;/span&gt;
+            &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;item_no&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;line&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;enumerate&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;utils&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;smart_open&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fname&lt;/span&gt;&lt;span class="p"&gt;)):&lt;/span&gt;
+                &lt;span class="n"&gt;line&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;utils&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;to_unicode&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;line&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+                &lt;span class="c1"&gt;# each file line is a single document in the Brown corpus&lt;/span&gt;
+                &lt;span class="c1"&gt;# each token is WORD/POS_TAG&lt;/span&gt;
+                &lt;span class="n"&gt;token_tags&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;split&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;t&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;line&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;split&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;split&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+                &lt;span class="c1"&gt;# ignore words with non-alphabetic tags like &amp;quot;,&amp;quot;, &amp;quot;!&amp;quot; etc (punctuation, weird stuff)&lt;/span&gt;
+                &lt;span class="n"&gt;words&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="si"&gt;%s&lt;/span&gt;&lt;span class="s2"&gt;/&lt;/span&gt;&lt;span class="si"&gt;%s&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;%&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;token&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;lower&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt; &lt;span class="n"&gt;tag&lt;/span&gt;&lt;span class="p"&gt;[:&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;token&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;tag&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;token_tags&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;tag&lt;/span&gt;&lt;span class="p"&gt;[:&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;isalpha&lt;/span&gt;&lt;span class="p"&gt;()]&lt;/span&gt;
+                &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="n"&gt;words&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;  &lt;span class="c1"&gt;# don&amp;#39;t bother sending out empty documents&lt;/span&gt;
+                    &lt;span class="k"&gt;continue&lt;/span&gt;
+                &lt;span class="k"&gt;yield&lt;/span&gt; &lt;span class="n"&gt;TaggedDocument&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;words&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="si"&gt;%s&lt;/span&gt;&lt;span class="s1"&gt;_SENT_&lt;/span&gt;&lt;span class="si"&gt;%s&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt; &lt;span class="o"&gt;%&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fname&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;item_no&lt;/span&gt;&lt;span class="p"&gt;)])&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;It's hard to see this in the documentation, but the iterator given by the class gives TaggedDocuments that consist of a list of words and a list of labels. In this class, the labels are:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="si"&gt;%s&lt;/span&gt;&lt;span class="s1"&gt;_SENT_&lt;/span&gt;&lt;span class="si"&gt;%s&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt; &lt;span class="o"&gt;%&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fname&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;item_no&lt;/span&gt;&lt;span class="p"&gt;)]&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;So I just thought I'd look at the first sentence and see what it was similar to. It seemed that the first sentence would be labelled&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;doc_id&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;/home/temp/nltk_data/corpora/brown/ca01_SENT_0&amp;quot;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Because when I did an ls or ll in &amp;quot;/home/temp/nltk_data/corpora/brown/&amp;quot;, ca01 was the first file listed. And the item_no in the for loop above would start at 0. &lt;em&gt;(If you don't already love it, look into the enumerate() function in python, it is very useful and idiomatic.)&lt;/em&gt; Long story short, the first document was ca01_SENT_2. I figured this out with the following code:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;gensim&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;multiprocessing&lt;/span&gt;
+
+&lt;span class="n"&gt;dirname&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;/home/temp/nltk_data/corpora/brown&amp;quot;&lt;/span&gt;
+
+&lt;span class="n"&gt;documents&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;gensim&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;models&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;doc2vec&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;TaggedBrownCorpus&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;dirname&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;all_docs&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;list&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;documents&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;all_tags&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;tagged_document&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;tags&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;tagged_document&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;all_docs&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="n"&gt;all_tags&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;at&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;at&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;all_tags&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;CONTENT&amp;#39;&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;at&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="n"&gt;all_tags&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;at&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;at&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;all_tags&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;ca01&amp;#39;&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;at&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="n"&gt;all_tags&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sort&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;all_tags&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Then, I was really perplexed, so I went to look at the ca01 file. As it turns out, the lines in these files are separated by two blank lines. So, the first non-empty line is not line0, not line 1, but line 2. Then line 5, 8, and so on, skipping two lines in between.&lt;/p&gt;
+&lt;p&gt;The moral of the story: The age-old adage: &amp;quot;Garbage in, garbage out&amp;quot;. In our profession you have to be vary careful about particulars. As a simple project, someone needs to improve the error handling in Doc2Vec, because the error I showed above was in no way helpful. After I sorted out this issue I went on to do lots of interesting experiments, and we should be grateful to the developers who made this software freely available for both academic and commercial use.&lt;/p&gt;
+</summary><category term="gensim"></category><category term="word2vec"></category><category term="machine learning"></category></entry></feed>

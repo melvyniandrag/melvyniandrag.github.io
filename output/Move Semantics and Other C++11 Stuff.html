@@ -1,0 +1,386 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link href='//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,400italic' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" type="text/css" href="https://melvyniandrag.github.io/theme/stylesheet/style.min.css">
+
+  <link rel="stylesheet" type="text/css" href="https://melvyniandrag.github.io/theme/pygments/github.min.css">
+  <link rel="stylesheet" type="text/css" href="https://melvyniandrag.github.io/theme/font-awesome/css/font-awesome.min.css">
+
+
+    <link href="https://melvyniandrag.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Melvyn's blog Atom">
+
+
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="" />
+
+
+<meta name="author" content="Melvyn Drag" />
+<meta name="description" content="Move Semantics and C++11" />
+<meta name="keywords" content="c++">
+<meta property="og:site_name" content="Melvyn's blog"/>
+<meta property="og:title" content="Move Semantics and Other C++11 Stuff"/>
+<meta property="og:description" content="Move Semantics and C++11"/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:url" content="https://melvyniandrag.github.io/Move Semantics and Other C++11 Stuff.html"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2018-11-19 02:40:00+01:00"/>
+<meta property="article:modified_time" content="2018-11-19 02:40:00+01:00"/>
+<meta property="article:author" content="https://melvyniandrag.github.io/author/melvyn-drag.html">
+<meta property="article:section" content="c++"/>
+<meta property="article:tag" content="c++"/>
+<meta property="og:image" content="https://melvyniandrag.github.io/theme/img/profile.png">
+
+  <title>Melvyn's blog &ndash; Move Semantics and Other C++11 Stuff</title>
+
+</head>
+<body>
+  <aside>
+    <div>
+      <a href="https://melvyniandrag.github.io">
+        <img src="https://melvyniandrag.github.io/theme/img/profile.png" alt="Melvyn Ian Drag" title="Melvyn Ian Drag">
+      </a>
+      <h1><a href="https://melvyniandrag.github.io">Melvyn Ian Drag</a></h1>
+
+<p>C++ / Python / Embedded Linux</p>
+      <nav>
+        <ul class="list">
+
+          <li><a href="https://www.mathtestmaker.com" target="_blank">TestMakerSite</a></li>
+          <li><a href="http://ballofknives.com/" target="_blank">Ball Of Knives</a></li>
+          <li><a href="http://jinja.pocoo.org/" target="_blank">Resume</a></li>
+        </ul>
+      </nav>
+
+      <ul class="social">
+        <li><a class="sc-github" href="https://github.com/melvyniandrag" target="_blank"><i class="fa fa-github"></i></a></li>
+        <li><a class="sc-linkedin" href="https://www.linkedin.com/in/melvyn-ian-drag-374613107/" target="_blank"><i class="fa fa-linkedin"></i></a></li>
+        <li><a class="sc-twitter" href="https://twitter.com/MelvynDrag" target="_blank"><i class="fa fa-twitter"></i></a></li>
+      </ul>
+    </div>
+
+
+  </aside>
+  <main>
+
+
+<article class="single">
+  <header>
+    <h1 id="Move Semantics and Other C++11 Stuff">Move Semantics and Other C++11 Stuff</h1>
+    <p>
+          Posted on Mon 19 November 2018 in <a href="https://melvyniandrag.github.io/category/c.html">c++</a>
+
+
+    </p>
+  </header>
+
+
+  <div>
+    <div class="section" id="introduction">
+<h2>Introduction</h2>
+<p>Just a quick refresher on move semantics and c++11 to keep it in mind, since the opportunities to use this stuff isn't always there, and if ya don't use it ya lose it. move semantics let you pass by value super fast. Useful when passing by value and passing by reference are both needed. Use the copy constructor for creating new objects, use move for passing by value.</p>
+</div>
+<div class="section" id="move-semantics">
+<h2>Move Semantics</h2>
+<p>R value references are mainly used for 2 things:
+1. Moving things, which allows for a cool efficient type of constructor
+2. Perfect forwarding, which allows for efficient passing of arguements through nested function calls.</p>
+</div>
+<div class="section" id="r-value-references">
+<h2>R Value References</h2>
+<p>I've seen lvalues and rvalues referred to as left/right values as well as locator/register values.</p>
+<p>An lvalue is a value that has an address in memory.</p>
+<p>An rvalue is a temporary value that only live for a bit in a register and is discarded after being processed.</p>
+<div class="highlight"><pre><span class="kt">void</span> <span class="nf">printInt</span><span class="p">(</span> <span class="kt">int</span><span class="o">&amp;</span> <span class="n">i</span> <span class="p">);</span> <span class="c1">// 1</span>
+<span class="kt">void</span> <span class="nf">printInt</span><span class="p">(</span> <span class="kt">int</span><span class="o">&amp;&amp;</span> <span class="n">i</span> <span class="p">);</span> <span class="c1">// 2</span>
+
+<span class="p">...</span>
+
+<span class="n">printInt</span><span class="p">(</span> <span class="mi">1</span> <span class="p">);</span> <span class="c1">//This calls version 2</span>
+<span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="n">printInt</span><span class="p">(</span> <span class="n">x</span> <span class="p">);</span> <span class="c1">// calls version 1</span>
+</pre></div>
+<p>We cannot pass an integer rvalue to version 2, and without the existence of version 2 we would get a compilation error. We can pass rvalues as const references, however. So, this code is good:</p>
+<div class="highlight"><pre><span class="kt">void</span> <span class="nf">printInt</span><span class="p">(</span> <span class="k">const</span> <span class="kt">int</span><span class="o">&amp;</span> <span class="n">i</span> <span class="p">);</span>
+
+<span class="p">...</span>
+
+<span class="n">printInt</span><span class="p">(</span> <span class="mi">1</span> <span class="p">);</span>
+</pre></div>
+<p>I think that's weird, I read somewhere that Bjarne thought about including references to rvalues, but that it was ultimately deemed to complicated to reason about from a programmer perspective. The const reference to an rvalue is still kind of weird to me, and I don't know why they allow it. the logic is that the referenced value won't change so it's okay. Don't know how the compiler deals with it and one day it would be interesting to play around with godbolt to see what happens.</p>
+<p>In the Bo Qian youtube tutorial, he shows how rvalue ref overloading functions can create ambiguities for the compiler:</p>
+<div class="highlight"><pre><span class="kt">void</span> <span class="nf">printInt</span><span class="p">(</span> <span class="kt">int</span><span class="o">&amp;&amp;</span> <span class="n">i</span> <span class="p">);</span>
+<span class="kt">void</span> <span class="nf">printInt</span><span class="p">(</span> <span class="kt">int</span> <span class="n">i</span> <span class="p">);</span>
+
+<span class="p">...</span>
+
+<span class="n">printInt</span><span class="p">(</span> <span class="mi">1</span> <span class="p">);</span> <span class="c1">// compiler error</span>
+</pre></div>
+<p>This is similar to the ambiguity that you see in C++98</p>
+<div class="highlight"><pre><span class="kt">void</span> <span class="nf">printInt</span><span class="p">(</span> <span class="kt">int</span><span class="o">&amp;</span> <span class="n">i</span> <span class="p">);</span>
+<span class="kt">void</span> <span class="nf">printInt</span><span class="p">(</span> <span class="kt">int</span> <span class="n">i</span> <span class="p">);</span>
+
+<span class="p">...</span>
+
+<span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="n">printInt</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+</pre></div>
+<p>A main use case of this (?)cryptic new syntax is creating move constructors, that allow you to move the contents of a container to a new memory location, leaving the old location in a useless, but destructable state. It performs a sort of shallow copy, transferring ownership of internal pointers and simple datatypes so that the values pointed to don't need to be recreated on copy.</p>
+<p>For example:</p>
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">hugeArray</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">array</span><span class="p">;</span>
+    <span class="kt">size_t</span> <span class="n">size</span><span class="p">;</span>
+
+    <span class="n">hugeArray</span><span class="p">(</span> <span class="p">...</span><span class="n">some</span> <span class="n">parameters</span><span class="p">...</span> <span class="p">){</span>
+        <span class="p">...</span> <span class="n">construct</span> <span class="p">...</span>
+    <span class="p">}</span>
+
+    <span class="n">hugeArray</span><span class="p">(</span> <span class="k">const</span> <span class="n">hugeArray</span><span class="o">&amp;</span> <span class="n">rhs</span> <span class="p">){</span>
+        <span class="c1">// the copy constructor has to copy the contents of rhs.array to array!</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">rhs</span><span class="p">.</span><span class="n">size</span><span class="p">;</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">double</span><span class="p">[</span><span class="n">size</span><span class="p">];</span>
+        <span class="n">memcpy</span><span class="p">(</span> <span class="n">array</span><span class="p">,</span> <span class="n">rhs</span><span class="p">.</span><span class="n">array</span><span class="p">,</span> <span class="n">size</span> <span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">hugeArray</span><span class="p">(</span> <span class="n">hugeArray</span><span class="o">&amp;&amp;</span> <span class="n">rhs</span> <span class="p">){</span>
+        <span class="c1">// move constructor just steals the ptr to the rhs.array!</span>
+        <span class="c1">// note that the rhs.array is junked, set to nullptr, the rhs is junk now.</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">rhs</span><span class="p">.</span><span class="n">size</span><span class="p">;</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="n">rhs</span><span class="p">.</span><span class="n">array</span><span class="p">;</span>
+        <span class="n">rhs</span><span class="p">.</span><span class="n">array</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+        <span class="n">rhs</span><span class="p">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="o">~</span><span class="n">hugeArray</span><span class="p">()</span> <span class="p">{</span> <span class="k">delete</span><span class="p">[]</span> <span class="n">array</span><span class="p">;</span> <span class="p">}</span>
+
+<span class="p">};</span>
+</pre></div>
+<p>Why couldn't we just take the hugeArray by reference, trash its internal members and steal pointers? The copy constructor can take a non const parameter. I guess this new syntax gives us a way to differentiate between the two cases. Anyway, here is usage of the above class:</p>
+<div class="highlight"><pre><span class="kt">void</span> <span class="nf">foo</span><span class="p">(</span> <span class="n">hugeArray</span> <span class="n">ha</span> <span class="p">);</span>
+<span class="kt">void</span> <span class="nf">bar</span><span class="p">(</span> <span class="n">hugeArray</span><span class="o">&amp;</span> <span class="n">ha</span> <span class="p">);</span>
+
+<span class="p">...</span>
+
+<span class="n">hugeArray</span> <span class="n">ha</span> <span class="o">=</span> <span class="n">ha</span><span class="p">(</span> <span class="p">...</span><span class="n">stuff</span><span class="p">...</span> <span class="p">);</span>
+<span class="n">foo</span><span class="p">(</span> <span class="n">ha</span> <span class="p">);</span> <span class="c1">// calls copy constructor</span>
+<span class="n">bar</span><span class="p">(</span> <span class="n">ha</span> <span class="p">);</span> <span class="c1">// no constructor call, by reference.</span>
+<span class="n">foo</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span> <span class="n">ha</span> <span class="p">)</span> <span class="p">);</span> <span class="c1">// but be sure not to use ha anymore. This calls the move constructor.</span>
+</pre></div>
+<p>std::move() turns an lvalue into an rvalue. Notive that the last call to foo() above turns ha into junk, due to the move contructor call. This is dangerous and error prone. This move constructor stuff is usually hidden behind some RAII stuff ( I think ), so we don't have to worry about this error prone situation.</p>
+<p>You can also create move assignment operators ( in addition to the move constructor shown above. So the old &quot;rule of 3&quot; for classes is now &quot;rule of 3, or 5&quot;</p>
+<ul class="simple">
+<li>destructor</li>
+<li>copy constructor</li>
+<li>assignment operator</li>
+<li>[new] move constructor</li>
+<li>[new] move assignment operator</li>
+</ul>
+<div class="highlight"><pre><span class="c1">//assignment</span>
+<span class="n">X</span><span class="o">&amp;</span> <span class="n">X</span><span class="o">::</span><span class="k">operator</span><span class="o">=</span><span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">rhs</span> <span class="p">);</span>
+<span class="n">X</span><span class="o">&amp;</span> <span class="n">X</span><span class="o">::</span><span class="k">operator</span><span class="o">=</span><span class="p">(</span> <span class="n">X</span><span class="o">&amp;&amp;</span> <span class="n">rhs</span> <span class="p">);</span>
+</pre></div>
+<p>This means that we get automatic speed up of code using the STL by moving to c++11 whenever we use pass by value.</p>
+<p>Before when we ran this:</p>
+<div class="highlight"><pre><span class="kt">void</span> <span class="n">foo</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">vec</span> <span class="p">)</span>
+</pre></div>
+<p>The code would call the copy constructor on the vec passed by value, which was wasteful because vec was a temporary. Now, the temporary passed to the function is moved into the function and we save 1/2 the time! The temporary is constructed and moved in, not constructed and copied in.</p>
+<div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;chrono&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;cstring&gt;</span><span class="cp"></span>
+
+<span class="k">class</span> <span class="nc">hugeArray</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">array</span><span class="p">;</span>
+    <span class="kt">size_t</span> <span class="n">size</span><span class="p">;</span>
+
+    <span class="n">hugeArray</span><span class="p">(</span> <span class="kt">size_t</span> <span class="n">N</span> <span class="p">){</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;constructor&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="p">[</span><span class="n">N</span><span class="p">];</span>
+        <span class="k">for</span><span class="p">(</span> <span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span> <span class="p">)</span>
+            <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">hugeArray</span><span class="p">(</span> <span class="k">const</span> <span class="n">hugeArray</span><span class="o">&amp;</span> <span class="n">rhs</span> <span class="p">)</span> <span class="o">=</span> <span class="k">delete</span><span class="p">;</span>
+
+    <span class="c1">//hugeArray( const hugeArray&amp; rhs ){</span>
+    <span class="c1">//    std::cout &lt;&lt; &quot;copy constructor&quot; &lt;&lt; std::endl;</span>
+    <span class="c1">//    // the copy constructor has to copy the contents of rhs.array to array!</span>
+    <span class="c1">//    size = rhs.size;</span>
+    <span class="c1">//    array = new int[size];</span>
+    <span class="c1">//    memcpy( array, rhs.array, size );</span>
+    <span class="c1">//}</span>
+
+    <span class="c1">//hugeArray( hugeArray&amp;&amp; rhs ) = delete;</span>
+
+    <span class="n">hugeArray</span><span class="p">(</span> <span class="n">hugeArray</span><span class="o">&amp;&amp;</span> <span class="n">rhs</span> <span class="p">){</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;move constructor&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+        <span class="c1">// move constructor just steals the ptr to the rhs.array!</span>
+        <span class="c1">// note that the rhs.array is junked, set to nullptr, the rhs is junk now.</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">rhs</span><span class="p">.</span><span class="n">size</span><span class="p">;</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="n">rhs</span><span class="p">.</span><span class="n">array</span><span class="p">;</span>
+        <span class="n">rhs</span><span class="p">.</span><span class="n">array</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+        <span class="n">rhs</span><span class="p">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="o">~</span><span class="n">hugeArray</span><span class="p">()</span> <span class="p">{</span> <span class="k">delete</span><span class="p">[]</span> <span class="n">array</span><span class="p">;</span> <span class="p">}</span>
+
+<span class="p">};</span>
+
+<span class="kt">void</span> <span class="nf">foo</span><span class="p">(</span> <span class="n">hugeArray</span> <span class="n">ha</span> <span class="p">){</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">ha</span><span class="p">.</span><span class="n">array</span><span class="p">[</span><span class="mi">100</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(){</span>
+    <span class="kt">size_t</span> <span class="n">N</span> <span class="o">=</span> <span class="mi">1000000</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">niter</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
+    <span class="k">auto</span> <span class="n">start</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">steady_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span>
+    <span class="k">for</span> <span class="p">(</span> <span class="k">auto</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">niter</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span> <span class="p">)</span> <span class="p">{</span>
+        <span class="n">foo</span><span class="p">(</span> <span class="n">hugeArray</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">auto</span> <span class="n">end</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">steady_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span>
+    <span class="k">auto</span> <span class="n">diff</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">duration</span> <span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">milli</span><span class="o">&gt;</span> <span class="p">(</span><span class="n">diff</span><span class="p">).</span><span class="n">count</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; ms&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+<p>Note that the above example won't work as described in the Bo videos. This will cause copy elision, and we won't see any performance increase from the move constructor if we compile this with g++. So run this example and toggle the commented line in main() with the std::move line.</p>
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">hugeArray</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">array</span><span class="p">;</span>
+    <span class="kt">size_t</span> <span class="n">size</span><span class="p">;</span>
+
+    <span class="n">hugeArray</span><span class="p">(</span> <span class="kt">size_t</span> <span class="n">N</span> <span class="p">){</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;constructor&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="p">[</span><span class="n">N</span><span class="p">];</span>
+        <span class="k">for</span><span class="p">(</span> <span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span> <span class="p">)</span>
+            <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="c1">//hugeArray( const hugeArray&amp; rhs ) = delete;</span>
+
+    <span class="n">hugeArray</span><span class="p">(</span> <span class="k">const</span> <span class="n">hugeArray</span><span class="o">&amp;</span> <span class="n">rhs</span> <span class="p">){</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;copy constructor&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">rhs</span><span class="p">.</span><span class="n">size</span><span class="p">;</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="p">[</span><span class="n">size</span><span class="p">];</span>
+        <span class="n">memcpy</span><span class="p">(</span> <span class="n">array</span><span class="p">,</span> <span class="n">rhs</span><span class="p">.</span><span class="n">array</span><span class="p">,</span> <span class="n">size</span> <span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">//hugeArray( hugeArray&amp;&amp; rhs ) = delete;</span>
+
+    <span class="n">hugeArray</span><span class="p">(</span> <span class="n">hugeArray</span><span class="o">&amp;&amp;</span> <span class="n">rhs</span> <span class="p">){</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;move constructor&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+        <span class="c1">// move constructor just steals the ptr to the rhs.array!</span>
+        <span class="c1">// note that the rhs.array is junked, set to nullptr, the rhs is junk now.</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">rhs</span><span class="p">.</span><span class="n">size</span><span class="p">;</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="n">rhs</span><span class="p">.</span><span class="n">array</span><span class="p">;</span>
+        <span class="n">rhs</span><span class="p">.</span><span class="n">array</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+        <span class="n">rhs</span><span class="p">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="o">~</span><span class="n">hugeArray</span><span class="p">()</span> <span class="p">{</span> <span class="k">delete</span><span class="p">[]</span> <span class="n">array</span><span class="p">;</span> <span class="p">}</span>
+
+<span class="p">};</span>
+
+<span class="kt">void</span> <span class="nf">foo</span><span class="p">(</span> <span class="n">hugeArray</span> <span class="n">ha</span> <span class="p">){</span>
+    <span class="n">assert</span><span class="p">(</span> <span class="n">ha</span><span class="p">.</span><span class="n">array</span><span class="p">[</span><span class="mi">100</span><span class="p">]</span> <span class="o">==</span> <span class="mi">100</span> <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(){</span>
+    <span class="kt">size_t</span> <span class="n">N</span> <span class="o">=</span> <span class="mi">1000000</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">niter</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
+    <span class="k">auto</span> <span class="n">start</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">steady_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span>
+    <span class="k">for</span> <span class="p">(</span> <span class="k">auto</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">niter</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span> <span class="p">)</span> <span class="p">{</span>
+        <span class="n">hugeArray</span> <span class="n">ha</span><span class="p">(</span><span class="n">N</span><span class="p">);</span>
+        <span class="n">foo</span><span class="p">(</span> <span class="n">ha</span> <span class="p">);</span>
+        <span class="c1">//foo( std::move(ha) );</span>
+    <span class="p">}</span>
+    <span class="k">auto</span> <span class="n">end</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">steady_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span>
+    <span class="k">auto</span> <span class="n">diff</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">duration</span> <span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">milli</span><span class="o">&gt;</span> <span class="p">(</span><span class="n">diff</span><span class="p">).</span><span class="n">count</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; ms&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+<p>If you compile the above as g++ -std=c++11 -O0 $CPPFILE you will see the incredible performance increase from using move.</p>
+</div>
+<div class="section" id="perfect-forwarding">
+<h2>Perfect Forwarding</h2>
+<p>Perfect forwarding, not port forwarding. Here's what its about:</p>
+<blockquote>
+Why is this useful? Well, it means that a function template can pass its arguments through to another function whilst retaining the lvalue/rvalue nature of the function arguments by using std::forward. This is called &quot;perfect forwarding&quot;, avoids excessive copying, and avoids the template author having to write multiple overloads for lvalue and rvalue references. - from ` here &lt;http://www.justsoftwaresolutions.co.uk/cplusplus/rvalue_references_and_perfect_forwarding.html/&gt;`_ .</blockquote>
+<div class="highlight"><pre><span class="k">template</span><span class="o">&lt;</span> <span class="k">class</span> <span class="nc">T</span> <span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">relay</span><span class="p">(</span> <span class="n">T</span> <span class="n">arg</span> <span class="p">)</span> <span class="p">{</span>
+    <span class="n">foo</span><span class="p">(</span> <span class="n">arg</span> <span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+<p>Requirements / wishes for this template:
+1. No costly, unnecessary copies of data.
+2. The type of the arg passed to foo() should be the same type as the arg passed to relay().</p>
+<p>If these conditions are met, we have perfect forwarding! The solution to achieve this is to rewrite relay( ) like this:</p>
+<div class="highlight"><pre><span class="k">template</span><span class="o">&lt;</span> <span class="k">typename</span> <span class="n">T</span> <span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">relay</span><span class="p">(</span> <span class="n">T</span><span class="o">&amp;&amp;</span> <span class="n">arg</span> <span class="p">){</span>
+    <span class="n">foo</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(</span> <span class="n">arg</span> <span class="p">)</span> <span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+<p>We can reason out the correctness of this approach using the C++ reference collapsing rules:</p>
+<ol class="arabic simple">
+<li>T&amp; &amp;   ==&gt; T&amp;</li>
+<li>T&amp; &amp;&amp;  ==&gt; T&amp;</li>
+<li>T&amp;&amp; &amp;  ==&gt; T&amp;</li>
+<li>T&amp;&amp; &amp;&amp; ==&gt; T&amp;&amp;</li>
+</ol>
+<p>as Bo Qian says - the single ref is infectious! Also, what is std::forward()?</p>
+<ol class="arabic simple">
+<li>std::move&lt;T&gt;( arg ); //turns arg into an rvalue type</li>
+<li>std::forward&lt;T&gt;( arg ); //turns arg into a T&amp;&amp; type.</li>
+</ol>
+<p>See the video C++11 Rvalue Reference - Perfect Forwarding for more information!</p>
+</div>
+<div class="section" id="references">
+<h2>References</h2>
+<ol class="arabic simple">
+<li><a class="reference external" href="https://www.youtube.com/watch?v=IOkgBrXCtfo&amp;index=3&amp;list=PL5jc9xFGsL8FWtnZBeTqZBbniyw0uHyaH/">Bo's video 1</a></li>
+<li><a class="reference external" href="https://www.youtube.com/watch?v=0xcCNnWEMgs&amp;list=PL5jc9xFGsL8FWtnZBeTqZBbniyw0uHyaH&amp;index=4/">Bo's video 2</a></li>
+<li><a class="reference external" href="https://stackoverflow.com/questions/3413470/what-is-stdmove-and-when-should-it-be-used/">Stackoverflow post. Link might die but it's good right now.</a></li>
+<li><a class="reference external" href="https://www.youtube.com/watch?v=PNRju6_yn3o/">Scary video about move semantics and OOP</a></li>
+</ol>
+</div>
+
+  </div>
+  <div class="tag-cloud">
+    <p>
+      <a href="https://melvyniandrag.github.io/tag/c.html">c++</a>
+    </p>
+  </div>
+
+
+
+
+</article>
+
+    <footer>
+<p>&copy; melvyn </p>
+<p>    Powered by <a href="http://getpelican.com" target="_blank">Pelican</a> - <a href="https://github.com/alexandrevicenzi/flex" target="_blank">Flex</a> theme by <a href="http://alexandrevicenzi.com" target="_blank">Alexandre Vicenzi</a>
+</p>    </footer>
+  </main>
+
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context" : "http://schema.org",
+  "@type" : "Blog",
+  "name": " Melvyn's blog ",
+  "url" : "https://melvyniandrag.github.io",
+  "image": "https://melvyniandrag.github.io/theme/img/profile.png",
+  "description": "Melvyn's Thoughts and Writings"
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Melvyn's blog</title><link href="https://melvyniandrag.github.io/" rel="alternate"></link><link href="https://melvyniandrag.github.io/feeds/arduino.atom.xml" rel="self"></link><id>https://melvyniandrag.github.io/</id><updated>2018-11-19T02:40:00+01:00</updated><entry><title>Inductive RGB Spark Plug Sensor.</title><link href="https://melvyniandrag.github.io/Inductive%20RGB%20tachometer.html" rel="alternate"></link><updated>2018-11-19T02:40:00+01:00</updated><author><name>Melvyn Drag</name></author><id>tag:melvyniandrag.github.io,2018-11-19:Inductive RGB tachometer.html</id><summary type="html">&lt;div class="section" id="introduction"&gt;
+&lt;h2&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;This project is inspired by this one:. &lt;a class="reference external" href="https://kokoraskostas.blogspot.com/2013/12/arduino-inductive-spark-plug-sensor.html/"&gt;Inductive Spark Plug Sensor&lt;/a&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="shopping-list"&gt;
+&lt;h2&gt;Shopping List&lt;/h2&gt;
+&lt;p&gt;Inductive Sensor
+1. XSolid Hookup wire
+2. X(2) 1N4007
+3. X(2) 10K Ohm Resistors
+4. X(1) 100nF Cap
+5. X(1) 5.1V zener diode
+6. X(1) 1N4148
+7. X(1) 2N3904
+8. X(1) 4.7K Ohm Resistor&lt;/p&gt;
+&lt;p&gt;Power Supply
+1. X(1) 1N4007
+2. X(2) 220uF Caps
+3. X(2) 100nF Caps
+4. X(1) LM7805
+5. Some means of providing 12V.&lt;/p&gt;
+&lt;p&gt;Pulse Counter
+1. X(1) SN74LS14N
+2. X(2) 1nF Caps&lt;/p&gt;
+&lt;p&gt;Keep an eye out on my instructable page for this project. Going to connect the sensor to some RGB LEDs and interpret the the rpm as a color.&lt;/p&gt;
+&lt;/div&gt;
+</summary><category term="Arduino"></category></entry></feed>
